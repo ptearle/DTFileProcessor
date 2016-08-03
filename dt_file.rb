@@ -6,21 +6,21 @@ require_relative 'dt_config'
 
 class DT_File
 
-  def initialize (vendor, client, protocol, file_type, mode, filer, logger)
-    @vendor    = vendor
-    @client    = client
-    @protocol  = protocol
-    @file_type = file_type
-    @mode      = mode
-    @filer     = filer
-
-
+  def initialize (vendor, client, protocol, file_type, file_version, mode, filer, logger)
+    @vendor       = vendor
+    @client       = client
+    @protocol     = protocol
+    @file_type    = file_type
+    @file_version = file_version
+    @mode         = mode
+    @filer        = filer
   end
 
   attr_reader :vendor
   attr_reader :client
   attr_reader :protocol
   attr_reader :file_type
+  attr_reader :file_version
   attr_reader :mode
   attr_reader :filer
 end
@@ -30,6 +30,77 @@ class DT_Transfers
   PROD_DIR = 'C:\SFTP_PROD'
   TEST_DIR = 'C:\SFTP_TEST'
   DIR_SEPARATOR = '\\'
+  INSERT_STATEMENTS = {
+      :INVENTORY_V1_0 =>
+          '
+           INSERT INTO dts_specimen_inventory_v1_0
+             (study_protocol_id,
+              site_number,
+              subject_num,
+              subject_gender,
+              subject_date_of_birth,
+              specimen_collect_date,
+              specimen_collect_time,
+              received_datetime,
+              visit_name,
+              specimen_barcode,
+              specimen_identifier,
+              specimen_type,
+              specimen_parent_id,
+              specimen_ischild,
+              specimen_condition,
+              specimen_status,
+              shipped_date,
+              vendor_code
+             ) VALUES',
+      :ASSAY_V1_0 =>
+          '
+           INSERT INTO dts_assay_results_v1_0
+             (study_protocol_id,
+              site_number,
+              subject_number,
+              collection_date,
+              visit_name,
+              lab_barcode,
+              analysis_barcode,
+              assay_batch_id,
+              exclusion_flag,
+              assay_date,
+              result_repeated,
+              replicate_number,
+              reported_datetime,
+              reported_rr_high,
+              reported_rr_low,
+              result_categorical,
+              result_categorical_code_list,
+              result_category,
+              assay_comment,
+              result_numeric,
+              result_numeric_precision,
+              result_type,
+              result_units,
+              assay_run_id,
+              vendor_id,
+              analyte,
+              assay_code,
+              assay_description,
+              assay_method,
+              assay_name,
+              assay_protocol_id,
+              assay_protocol_version,
+              equipment_used,
+              lab_assay_protocol_id,
+              lab_assay_protocol_version,
+              lab_test_name,
+              lab_test_number,
+              LOINC_code,
+              sample_storage_conditions,
+              sensitivity,
+              assay_status,
+              test_type,
+              vendor_code
+             ) VALUES',
+    }.freeze
 
   def initialize(logger)
     @transfers = Array.new
@@ -38,6 +109,7 @@ class DT_Transfers
                               'BMS',
                               'CA018-001',
                               'INVENTORY',
+                              'V1_0',
                               'CUMULATIVE',
                               CA018001_EDD.new(logger),
                               logger)
@@ -46,6 +118,7 @@ class DT_Transfers
                               'BMS',
                               'CA018-001',
                               'INVENTORY',
+                              'V1_0',
                               'CUMULATIVE',
                               CA018001_BMS.new(logger),
                               logger)
@@ -54,6 +127,7 @@ class DT_Transfers
                               'BMS',
                               'CA018-001',
                               'INVENTORY',
+                              'V1_0',
                               'CUMULATIVE',
                               CA018001_BMS.new(logger),
                               logger)
@@ -61,9 +135,19 @@ class DT_Transfers
     @transfers << DT_File.new('QATL',
                               'BMS',
                               'CA018-001',
-                              'CLINVENTORY',
+                              'INVENTORY',
+                              'V1_0',
                               'CUMULATIVE',
                               CA018001_QINV.new(logger),
+                              logger)
+    logger.info 'Initializing QATL ASSAY RESULTS filer for CA018-001'
+    @transfers << DT_File.new('QATL',
+                              'BMS',
+                              'CA018-001',
+                              'ASSAY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              CA018001_QASY.new(logger),
                               logger)
     @my_connections = DT_Connections.new(logger)
     @logger = logger
@@ -102,6 +186,13 @@ class DT_Transfers
     @logger.debug "Directory is ->#{file_path}<-"
     @logger.debug "Filemask is ->#{file_mask}<-"
 
+    begin
+      this_connection = @my_connections.db_connect(this_transfer.client, env)
+    rescue Exception => e
+      @logger.error "DB Connection failure - #{e.message}"
+      exit -1
+    end
+
     if this_transfer.mode == 'CUMULATIVE'
       if file_list.length == 0
         @logger.info 'No files to process'
@@ -117,49 +208,23 @@ class DT_Transfers
 
       @logger.info("#{num_in} read in")
 
-      if (num_to_process = this_transfer.filer.processor) == 0
+      if (num_to_process = this_transfer.filer.processor(this_connection)) == 0
         logger.info 'No records to process'
       end
 
       @logger.info("#{num_to_process} to process")
 
-      insert_statement = 'INSERT INTO dts_specimen_inventory_v1_0 (study_protocol_id,
-                                                                   site_number,
-                                                                   subject_num,
-                                                                   subject_gender,
-                                                                   subject_date_of_birth,
-                                                                   specimen_collect_date,
-                                                                   specimen_collect_time,
-                                                                   received_datetime,
-                                                                   visit_name,
-                                                                   specimen_barcode,
-                                                                   specimen_identifer,
-                                                                   specimen_type,
-                                                                   specimen_parent_id,
-                                                                   specimen_ischild,
-                                                                   specimen_condition,
-                                                                   specimen_status,
-                                                                   shipped_date,
-                                                                   vendor_code
-                                                                  )
-            VALUES'
+      insert_statement = INSERT_STATEMENTS[(this_transfer.file_type+'_'+this_transfer.file_version).to_sym]
       insert_statement += this_transfer.filer.writer(this_transfer.vendor)
 
       @logger.debug (insert_statement)
-
-      begin
-        this_connection = @my_connections.db_connect(this_transfer.client, env)
-      rescue Exception => e
-        @logger.error "DB Connection failure - #{e.message}"
-        exit -1
-      end
 
       begin
         this_connection.query(insert_statement)
       rescue Mysql2::Error => e
         @logger.error "DB Insert failure - #{e.message}"
         exit -1
-     end
+      end
 
 #     begin
 #        this_connection.query('CALL load_dts_specimen_inventory_v1_0')

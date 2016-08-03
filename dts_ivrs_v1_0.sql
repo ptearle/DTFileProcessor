@@ -3,6 +3,8 @@ CREATE TABLE dts_ivrs_v1_0 (
   study_protocol_id            varchar(50)  DEFAULT NULL,
   site_number                  varchar(50)  DEFAULT NULL,
   subject_number               varchar(50)  DEFAULT NULL,
+  gender                       varchar(50)  DEFAULT NULL,
+  date_of_birth                date         DEFAULT NULL,
   randomization_id             varchar(50)  DEFAULT NULL,
   vendor_code                  varchar(255) NOT NULL,
   record_status                varchar(50)  NOT NULL DEFAULT 'new',

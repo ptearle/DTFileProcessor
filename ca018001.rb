@@ -1,3 +1,5 @@
+require 'mysql2'
+
 class CA018001_EDD
   def initialize(logger)
     @logger = logger
@@ -12,7 +14,7 @@ class CA018001_EDD
     @inbound_lines.length
   end
 
-  def processor
+  def processor(this_connection)
     @logger.info 'CA018001_EDD processor start'
 
     @processing_lines = Array.new
@@ -107,7 +109,7 @@ class CA018001_BMS
     @inbound_lines.length
   end
 
-  def processor
+  def processor(this_connection)
     @logger.info 'CA018001_BMS processor start'
     @processing_lines = @inbound_lines
     @logger.info 'CA018001_BMS processor end'
@@ -223,7 +225,7 @@ class CA018001_QINV
     @inbound_lines.length
   end
 
-  def processor
+  def processor(this_connection)
     @logger.info 'CA018001_QINV processor start'
     @processing_lines = @inbound_lines
     @logger.info 'CA018001_QINV processor end'
@@ -246,8 +248,6 @@ class CA018001_QINV
       specimen_ischild   = (outline[30].nil?)  ? "'N'"    : "'Y'"
       specimen_shipdate  = (outline[35].nil?)  ? 'NULL'   : "STR_TO_DATE('#{outline[35].strip}', '%Y-%m-%d')"
       specimen_condition = (outline[20].nil?)  ? 'NULL'   : "'#{outline[20]}'"
-
-      @logger.debug("->#{outline[6].strip}<-")
 
       values_clause << "\n"                                           +
           " ('#{outline[0]}',"                                        + # study_protocol_id
@@ -275,3 +275,175 @@ class CA018001_QINV
     values_clause[0...-1]
   end
 end
+
+class CA018001_QASY
+  VISIT_MAP = {
+      :PE0001     => 'SCR ARCHIVAL TISSUE',
+      :PE0002     => 'SCR FRESH IHC QLAB A',
+      :PE0003     => 'SCR FRESH TO LABCORP',
+      :PE0004     => 'SCR FRESH IHC QLAB B',
+      :PE0005     => 'SCR FRESH RNA QLAB A',
+      :PE0006     => 'SCR FRESH RNA QLAB B',
+      :UNSCHED_1  => 'C1 D1',
+      :UNSCHED_10 => 'C1 D15 CYTOMETRY',
+      :UNSCHED_12 => 'C3 D1',
+      :UNSCHED_16 => 'EOT',
+      :UNSCHED_18 => 'PROG/ UNSCH PBMC',
+      :UNSCHED_2  => 'C1 D1 CYTOMETRY',
+      :UNSCHED_20 => 'FU3 D100',
+      :UNSCHED_21 => 'FU1 D30',
+      :UNSCHED_22 => 'PROG/ UNSCH CYTOMETRY',
+      :UNSCHED_23 => 'FU2 D60',
+      :UNSCHED_24 => 'C5 D1',
+      :UNSCHED_25 => 'C1 D28 TISSUE IHC A',
+      :UNSCHED_26 => 'C1 D28 TISSUE IHC B',
+      :UNSCHED_27 => 'C1 D28 TISSUE IHC C',
+      :UNSCHED_28 => 'C1 D28 TISSUE RNA A',
+      :UNSCHED_29 => 'C1 D28 TISSUE RNA B',
+      :UNSCHED_3  => 'C1 D1 PBMC',
+      :UNSCHED_35 => 'PROG/UNSCH IHC A',
+      :UNSCHED_36 => 'PROG/ UNSCH IHC B',
+      :UNSCHED_37 => 'PROG/ UNSCH IHC C',
+      :UNSCHED_38 => 'PROG/ UNSCH RNA A',
+      :UNSCHED_39 => 'PROG/ UNSCH RNA B',
+      :UNSCHED_4	 => 'C1 D1 EOI PK',
+      :UNSCHED_40 => 'PROG/ UNSCH',
+      :UNSCHED_41 => 'TRACK 1 RUN-IN EOI PK',
+      :UNSCHED_42 => 'TRACK 1 RUN-IN D1',
+      :UNSCHED_43 => 'TRACK 1 RUN-IN D1 CYTO',
+      :UNSCHED_44 => 'TRACK 1 RUN-IN D15',
+      :UNSCHED_45 => 'TRACK 1 RUN-IN D15 CYTO',
+      :UNSCHED_46 => 'TRACK 1 RUN-IN D15 PBMC',
+      :UNSCHED_47 => 'TRACK 1 RUN-IN D1 PBMC',
+      :UNSCHED_5  => 'C1 D28',
+      :UNSCHED_6  => 'C1 D15 PBMC',
+      :UNSCHED_7  => 'C1 D28 CYTOMETRY',
+      :UNSCHED_8  => 'C1 D15',
+      :UNSCHED_9  => 'C1 D28 PBMC'
+  }.freeze
+
+  SPECIMEN_TYPE = {
+      :BLOCK     => 'Tissue',
+  }.freeze
+
+  def initialize(logger)
+    @logger = logger
+    @logger.info 'CA018001_QASY filer Initialized'
+  end
+
+  def reader(inbound_file)
+    @logger.info 'CA018001_QASY reader start'
+    @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
+    @logger.info 'CA018001_QASY reader end'
+    @inbound_lines.length
+  end
+
+  def processor(this_connection)
+    @logger.info 'CA018001_QASY processor start'
+
+    @processing_lines = Array.new
+    lines = 0
+    current_accession = ''
+    specimens = Mysql2::Result.new
+
+    @inbound_lines.each do |assayline|
+      lines += 1
+
+      # Ignore if assay code starts with "SMT""
+      if assayline[26].strip.start_with?('SMT')
+        next
+      end
+
+      #check to see if we have a new accession.
+      if assayline[5].strip != current_accession
+        current_accession = assayline[5]
+
+        begin
+          specimens = this_connection.query("SELECT barcode FROM specimens WHERE barcode like '#{current_accession}%'")
+        rescue Mysql2::Error => e
+          @logger.error "DB Error - get specimen by accession - #{e.message}"
+          exit -1
+        end
+      end
+
+      if specimens.nil? or specimens.count == 0
+       next
+      end
+
+@logger.debug "Found ->#{specimens.count}<- speciemens for accession ->#{current_accession}<-"
+      # add a adt result for each specimen in the accession
+      specimens.each do |this_specimen|
+        assayline[5] = "#{this_specimen['barcode']}"
+        new_line = Array.new
+        assayline.each do |e| new_line << e[1] end
+        @processing_lines << new_line
+      end
+    end
+
+    @logger.info 'CA018001_QASY processor end'
+    @processing_lines.length
+  end
+
+  def writer(vendor)
+    @logger.info 'CA018001_QASY writer start'
+
+    values_clause = ''
+    null_str = 'NULL'
+
+    @processing_lines.each do |outline|
+
+
+      assay_date         = (outline[9].nil?)   ? 'NULL'   : "STR_TO_DATE('#{outline[9].strip}', '%Y-%m-%d')"
+      reported_datettime = (outline[12].nil?)  ? 'NULL'   : "STR_TO_DATE('#{outline[12].strip}', '%Y-%m-%d %k:%i')"
+
+      values_clause << "\n"                                                 +
+          " ('#{outline[0].strip}',"                                        + # study_protocol_id
+          "  '#{outline[1].strip}',"                                        + # site_number
+          "  '#{outline[2].strip}',"                                        + # subject_number
+          "  STR_TO_DATE('#{outline[3].strip}',  '%Y-%m-%d'),"              + # collection_date
+          "  #{(outline[4].nil?) ? 'NULL' : '\''+outline[4].strip+'\''},"   + # visit_name
+          "  #{(outline[5].nil?) ? 'NULL' : '\''+outline[5].strip+'\''},"   + # lab_barcode
+          "  #{(outline[6].nil?) ? 'NULL' : '\''+outline[6].strip+'\''},"   + # analysis_barcode
+          "  #{(outline[7].nil?) ? 'NULL' : '\''+outline[7].strip+'\''},"   + # assay_batch_id
+          "  #{(outline[8].nil?) ? 'NULL' : '\''+outline[8].strip+'\''},"   + # exclusion_flag
+          "  #{assay_date},"                                                + # assay_date
+          "  #{(outline[10].nil?) ? 'NULL' : '\''+outline[10].strip+'\''}," + # result_repeated
+          "  #{(outline[11].nil?) ? 'NULL' : '\''+outline[11].strip+'\''}," + # replicate_number
+          "  #{reported_datettime},"                                        + # reported_datetime
+          "  #{(outline[13].nil?) ? 'NULL' : '\''+outline[13].strip+'\''}," + # reported_rr_high
+          "  #{(outline[14].nil?) ? 'NULL' : '\''+outline[14].strip+'\''}," + # reported_rr_low
+          "  #{(outline[15].nil?) ? 'NULL' : '\''+outline[15].strip+'\''}," + # result_categorical
+          "  #{(outline[16].nil?) ? 'NULL' : '\''+outline[16].strip+'\''}," + # result_categorical_code_list
+          "  #{(outline[17].nil?) ? 'NULL' : '\''+outline[17].strip+'\''},"	+ # result_category
+          "  #{(outline[18].nil?) ? 'NULL' : '\''+outline[18].strip+'\''}," + # assay_comment
+          "  #{(outline[19].nil?) ? 'NULL' : outline[19].strip},"           + # result_numeric
+          "  #{(outline[20].nil?) ? 'NULL' : '\''+outline[20].strip+'\''}," + # result_numeric_precision
+          "  #{(outline[21].nil?) ? 'NULL' : '\''+outline[21].strip+'\''}," + # result_type
+          "  #{(outline[22].nil?) ? 'NULL' : '\''+outline[22].strip+'\''}," + # result_units
+          "  #{(outline[23].nil?) ? 'NULL' : '\''+outline[23].strip+'\''}," + # assay_run_id
+          "  #{(outline[24].nil?) ? 'NULL' : '\''+outline[24].strip+'\''}," + # vendor_id
+          "  #{(outline[25].nil?) ? 'NULL' : '\''+outline[25].strip+'\''}," + # analyte
+          "  #{(outline[26].nil?) ? 'NULL' : '\''+outline[26].strip+'\''}," + # assay_code
+          "  #{(outline[27].nil?) ? 'NULL' : '\''+outline[27].strip+'\''}," + # assay_description
+          "  #{(outline[28].nil?) ? 'NULL' : '\''+outline[28].strip+'\''}," + # assay_method
+          "  #{(outline[29].nil?) ? 'NULL' : '\''+outline[29].strip+'\''}," + # assay_name
+          "  #{(outline[30].nil?) ? 'NULL' : '\''+outline[30].strip+'\''}," + # assay_protocol_id
+          "  #{(outline[31].nil?) ? 'NULL' : '\''+outline[31].strip+'\''}," + # assay_protocol_version
+          "  #{(outline[32].nil?) ? 'NULL' : '\''+outline[32].strip+'\''}," + # equipment_used
+          "  #{(outline[33].nil?) ? 'NULL' : '\''+outline[33].strip+'\''}," + # lab_assay_protocol_id
+          "  #{(outline[34].nil?) ? 'NULL' : '\''+outline[34].strip+'\''}," + # lab_assay_protocol_version
+          "  #{(outline[35].nil?) ? 'NULL' : '\''+outline[35].strip+'\''}," + # lab_test_name
+          "  #{(outline[36].nil?) ? 'NULL' : '\''+outline[36].strip+'\''}," + # lab_test_number
+          "  #{(outline[37].nil?) ? 'NULL' : '\''+outline[37].strip+'\''}," + # LOINC_code
+          "  #{(outline[38].nil?) ? 'NULL' : '\''+outline[38].strip+'\''}," + # sample_storage_conditions
+          "  #{(outline[39].nil?) ? 'NULL' : '\''+outline[39].strip+'\''}," + # sensitivity
+          "  #{(outline[40].nil?) ? 'NULL' : '\''+outline[40].strip+'\''}," + # assay_status
+          "  #{(outline[41].nil?) ? 'NULL' : '\''+outline[41].strip+'\''}," + # test_type
+		      "  '#{vendor}'"                                                   + # vendor_code
+		  "),"                                                        
+    end                                                               
+                                                                      
+    @logger.info 'CA018001_QASY writer end'                           
+    values_clause[0...-1]                                             
+  end                                                                 
+end                                                                   

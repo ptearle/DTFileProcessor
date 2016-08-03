@@ -1,5 +1,3 @@
-require_relative 'dt_config'
-
 class DB_Config
 
   def initialize (client, client_code, env, host, user, pass, port, database)
@@ -115,7 +113,7 @@ class DT_Connections
 
   def db_connect (client, env)
 
-    @logger.info "Looking for #{client} and #{env}"
+    @logger.debug "Looking for #{client} #{env} connection"
 
     @systems.each do |system|
       if (system.client == client or system.client_code == client) and system.env == env
