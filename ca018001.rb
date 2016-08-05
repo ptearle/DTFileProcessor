@@ -3,19 +3,19 @@ require 'mysql2'
 class CA018001_EDD
   def initialize(logger)
     @logger = logger
-    @logger.info 'CA018001_EDD filer Initialized'
+    @logger.info "#{self.class.name} filer initialized"
   end
 
   def reader(inbound_file)
     @logger.debug "File name is ->#{inbound_file}<-"
-    @logger.info 'CA018001_EDD reader start'
+    @logger.info "#{self.class.name} reader start"
     @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
-    @logger.info 'CA018001_EDD reader end'
+    @logger.info "#{self.class.name} reader end"
     @inbound_lines.length
   end
 
   def processor(this_connection)
-    @logger.info 'CA018001_EDD processor start'
+    @logger.info "#{self.class.name} processor start"
 
     @processing_lines = Array.new
     lines = 0
@@ -48,19 +48,19 @@ class CA018001_EDD
       end
     end
 
-    @logger.info 'CA018001_EDD processor end'
+    @logger.info "#{self.class.name} processor end"
     @processing_lines.length
   end
 
   def writer(vendor)
-    @logger.info 'CA018001_EDD writer start'
+    @logger.info "#{self.class.name} writer start"
 
     if @processing_lines.count == 0
-      logger.info ("Nothing to insert :(")
+      logger.info "Nothing to insert :("
       exit 0
     end
 
-    values_clause = ''
+    values_clause = Array.new
 
     @processing_lines.each do |outline|
 
@@ -69,7 +69,7 @@ class CA018001_EDD
       specimen_type    = (outline[16][0..2] == 'SCR') ? 'Tissue' : 'Whole Blood'
       receive_datetime = (is_child == 'Y')            ? "NULL"   : "STR_TO_DATE('#{outline[15].strip}',  '%d-%b-%Y %T')"
 
-      values_clause << "\n"                                                       +
+      values_clause <<
                        " ('CA018-001',"                                           + # study_protocol_id
                        "  '#{outline[2].strip}',"                                 + # site_number
                        "  '#{outline[4].strip}',"                                 + # subject_number
@@ -80,46 +80,47 @@ class CA018001_EDD
                        "  #{receive_datetime},"                                   + # specimen_receive_datetime
                        "  '#{outline[16].strip}',"                                + # visit_name
                        "  '#{outline[8].strip}#{outline[9].strip}',"              + # specimen_barcode
-                       "  NULL,"                                                  + # specimen_identifier
+                       '  NULL,'                                                  + # specimen_identifier
                        "  '#{specimen_type}',"                                    + # specimen_type
+                       '  NULL,'                                                  + # specimen_name
                        "  #{parent_id},"                                          + # specimen_parent
                        "  '#{is_child}',"                                         + # specimen_ischild
-                       "  NULL,"                                                  + # specimen_condition
+                       '  NULL,'                                                  + # specimen_condition
                        "  'In Inventory',"                                        + # specimen_status
-                       "  NULL,"                                                  + # specimen_shipdate
+                       '  NULL,'                                                  + # specimen_shipdate
                        "  '#{vendor}'"                                            + # vendor_code
-                       " ),"
+                       " )"
     end
 
-    @logger.info 'CA018001_EDD writer end'
-    values_clause[0...-1]
+    @logger.info "#{self.class.name} writer end"
+    values_clause
   end
 end
 
 class CA018001_BMS
   def initialize(logger)
     @logger = logger
-    @logger.info 'CA018001_BMS filer Initialized'
+    @logger.info "#{self.class.name} filer initialized"
   end
 
   def reader(inbound_file)
-    @logger.info 'CA018001_BMS reader start'
+    @logger.info "#{self.class.name} reader start"
     @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
-    @logger.info 'CA018001_BMS reader end'
+    @logger.info "#{self.class.name}reader end"
     @inbound_lines.length
   end
 
   def processor(this_connection)
-    @logger.info 'CA018001_BMS processor start'
+    @logger.info "#{self.class.name} processor start"
     @processing_lines = @inbound_lines
-    @logger.info 'CA018001_BMS processor end'
+    @logger.info "#{self.class.name} processor end"
     @processing_lines.length
   end
 
   def writer(vendor)
-    @logger.info 'CA018001_BMS writer start'
+    @logger.info "#{self.class.name} writer start"
 
-    values_clause = ''
+    values_clause = Array.new
 
     @processing_lines.each do |outline|
 
@@ -136,7 +137,7 @@ class CA018001_BMS
       specimen_ischild  = (outline[9].nil?)  ? "'N'" : "'Y'"
       specimen_shipdate = (outline[12].nil?) ? 'NULL' : "STR_TO_DATE('#{outline[4].strip}',  '%c/%e/%Y %l:%i')"
 
-      values_clause << "\n"                                                       +
+      values_clause <<
                        " ('#{outline[0]}',"                                       + # study_protocol_id
                        " '#{site_number}',"                                       + # site_number
                        " '#{subject_number}',"                                    + # subject_number
@@ -149,17 +150,18 @@ class CA018001_BMS
                        " '#{specimen_barcode}',"                                  + # specimen_barcode
                        " '#{outline[7].strip}',"                                  + # specimen_identifier
                        " '#{outline[8].strip}',"                                  + # specimen_type
+                       ' NULL,'                                                   + # specimen_name
                        " #{specimen_parent},"                                     + # specimen_parent
                        " #{specimen_ischild},"                                    + # specimen_ischild
                        ' NULL,'                                                   + # specimen_condition
                        " '#{outline[11].strip}',"                                 + # specimen_status
                        " #{specimen_shipdate},"                                   + # specimen_shipdate
                        " '#{vendor}'"                                             + # vendor_code
-                       "),"
+                       ')'
     end
 
-    @logger.info 'CA018001_BMS writer end'
-    values_clause[0...-1]
+    @logger.info "#{self.class.name} writer end"
+    values_clause
   end
 end
 
@@ -215,27 +217,27 @@ class CA018001_QINV
 
   def initialize(logger)
     @logger = logger
-    @logger.info 'CA018001_QINV filer Initialized'
+    @logger.info "#{self.class.name} filer initialized"
   end
 
   def reader(inbound_file)
-    @logger.info 'CA018001_QINV reader start'
+    @logger.info "#{self.class.name} reader start"
     @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
-    @logger.info 'CA018001_QINV reader end'
+    @logger.info "#{self.class.name} reader end"
     @inbound_lines.length
   end
 
   def processor(this_connection)
-    @logger.info 'CA018001_QINV processor start'
+    @logger.info "#{self.class.name} processor start"
     @processing_lines = @inbound_lines
-    @logger.info 'CA018001_QINV processor end'
+    @logger.info "#{self.class.name} processor end"
     @processing_lines.length
   end
 
   def writer(vendor)
-    @logger.info 'CA018001_QINV writer start'
+    @logger.info "#{self.class.name} writer start"
 
-    values_clause = ''
+    values_clause = Array.new
 
     @processing_lines.each do |outline|
 
@@ -249,7 +251,7 @@ class CA018001_QINV
       specimen_shipdate  = (outline[35].nil?)  ? 'NULL'   : "STR_TO_DATE('#{outline[35].strip}', '%Y-%m-%d')"
       specimen_condition = (outline[20].nil?)  ? 'NULL'   : "'#{outline[20]}'"
 
-      values_clause << "\n"                                           +
+      values_clause <<
           " ('#{outline[0]}',"                                        + # study_protocol_id
           "  '#{outline[2]}',"                                        + # site_number
           "  '#{outline[4]}',"                                        + # subject_number
@@ -262,17 +264,18 @@ class CA018001_QINV
           "  '#{specimen_barcode}',"                                  + # specimen_barcode
           "  '#{outline[11].strip}',"                                 + # specimen_identifier
           "   #{specimen_type},"                                      + # specimen_type
+          '   NULL,'                                                  + # specimen_name
           "   #{specimen_parent},"                                    + # specimen_parent
           "   #{specimen_ischild},"                                   + # specimen_ischild
           "   #{specimen_condition},"                                 + # specimen_condition
           "   'In Inventory',"                                        + # specimen_status
           "   #{specimen_shipdate},"                                  + # specimen_shipdate
           "  '#{vendor}'"                                             + # vendor_code
-          "),"
+          ')'
     end
 
-    @logger.info 'CA018001_QINV writer end'
-    values_clause[0...-1]
+    @logger.info "#{self.class.name} writer end"
+    values_clause
   end
 end
 
@@ -328,18 +331,18 @@ class CA018001_QASY
 
   def initialize(logger)
     @logger = logger
-    @logger.info 'CA018001_QASY filer Initialized'
+    @logger.info "#{self.class.name} filer initialized"
   end
 
   def reader(inbound_file)
-    @logger.info 'CA018001_QASY reader start'
+    @logger.info "#{self.class.name} reader start"
     @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
-    @logger.info 'CA018001_QASY reader end'
+    @logger.info "#{self.class.name} reader end"
     @inbound_lines.length
   end
 
   def processor(this_connection)
-    @logger.info 'CA018001_QASY processor start'
+    @logger.info "#{self.class.name} processor start"
 
     @processing_lines = Array.new
     lines = 0
@@ -380,28 +383,27 @@ class CA018001_QASY
       end
     end
 
-    @logger.info 'CA018001_QASY processor end'
+    @logger.info "#{self.class.name} processor end"
     @processing_lines.length
   end
 
   def writer(vendor)
-    @logger.info 'CA018001_QASY writer start'
+    @logger.info "#{self.class.name} writer start"
 
     values_clause = ''
-    null_str = 'NULL'
 
     @processing_lines.each do |outline|
 
-
       assay_date         = (outline[9].nil?)   ? 'NULL'   : "STR_TO_DATE('#{outline[9].strip}', '%Y-%m-%d')"
       reported_datettime = (outline[12].nil?)  ? 'NULL'   : "STR_TO_DATE('#{outline[12].strip}', '%Y-%m-%d %k:%i')"
+      visit_name         = VISIT_MAP[outline[22].to_sym]
 
-      values_clause << "\n"                                                 +
+      values_clause
           " ('#{outline[0].strip}',"                                        + # study_protocol_id
           "  '#{outline[1].strip}',"                                        + # site_number
           "  '#{outline[2].strip}',"                                        + # subject_number
           "  STR_TO_DATE('#{outline[3].strip}',  '%Y-%m-%d'),"              + # collection_date
-          "  #{(outline[4].nil?) ? 'NULL' : '\''+outline[4].strip+'\''},"   + # visit_name
+          "  '#{visit_name}',"                                              + # visit_name
           "  #{(outline[5].nil?) ? 'NULL' : '\''+outline[5].strip+'\''},"   + # lab_barcode
           "  #{(outline[6].nil?) ? 'NULL' : '\''+outline[6].strip+'\''},"   + # analysis_barcode
           "  #{(outline[7].nil?) ? 'NULL' : '\''+outline[7].strip+'\''},"   + # assay_batch_id
@@ -440,10 +442,10 @@ class CA018001_QASY
           "  #{(outline[40].nil?) ? 'NULL' : '\''+outline[40].strip+'\''}," + # assay_status
           "  #{(outline[41].nil?) ? 'NULL' : '\''+outline[41].strip+'\''}," + # test_type
 		      "  '#{vendor}'"                                                   + # vendor_code
-		  "),"                                                        
+		  ')'
     end                                                               
                                                                       
-    @logger.info 'CA018001_QASY writer end'                           
-    values_clause[0...-1]                                             
+    @logger.info "#{self.class.name} writer end"
+    values_clause
   end                                                                 
 end                                                                   

@@ -1,8 +1,21 @@
 require 'aws-sdk'
 require 'fileutils'
 
+require_relative 'r668ad1021'
 require_relative 'ca018001'
 require_relative 'dt_config'
+
+class String
+  def insert_value
+    "  #{'\''+self.strip+'\''},"
+  end
+end
+
+class NilClass
+  def insert_value
+    'NULL,'
+  end
+end
 
 class DT_File
 
@@ -30,6 +43,7 @@ class DT_Transfers
   PROD_DIR = 'C:\SFTP_PROD'
   TEST_DIR = 'C:\SFTP_TEST'
   DIR_SEPARATOR = '\\'
+  INSERT_FRAME = 10000
   INSERT_STATEMENTS = {
       :INVENTORY_V1_0 =>
           '
@@ -46,6 +60,7 @@ class DT_Transfers
               specimen_barcode,
               specimen_identifier,
               specimen_type,
+              specimen_name,
               specimen_parent_id,
               specimen_ischild,
               specimen_condition,
@@ -100,6 +115,50 @@ class DT_Transfers
               test_type,
               vendor_code
              ) VALUES',
+      :SITE_V1_0 =>
+          '
+           INSERT INTO dts_site_v1_0
+             (study_protocol_id,
+              site_number,
+              site_name,
+              site_address,
+              site_city,
+              site_state,
+              site_country,
+              site_postal_code,
+              site_phone,
+              site_fax,
+              site_FPFV,
+              site_LPLV,
+              planned_enrollment,
+              site_PI,
+              site_PI_email,
+              site_coordinator,
+              site_coordinator_email,
+              vendor_code
+             ) VALUES',
+      :SUBJECT_V1_0 =>
+          '
+           INSERT INTO dts_subject_v1_0
+             (study_protocol_id,
+              site_number,
+              subject_code,
+              subject_external_id,
+              gender,
+              initials,
+              enrollment_status,
+              date_of_birth,
+              address,
+              city,
+			        state,
+			        region,
+			        country,
+			        postcode,
+			        primary_race,
+			        secondary_race,
+			        ethnicity,
+			        vendor_code
+             ) VALUES',
     }.freeze
 
   def initialize(logger)
@@ -149,6 +208,43 @@ class DT_Transfers
                               'CUMULATIVE',
                               CA018001_QASY.new(logger),
                               logger)
+    logger.info 'Initializing RGRN SITE filer for R668-AD-1021'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1021',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668AD1021_site.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SITE filer for R668-AD-1021'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1021',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668AD1021_subject.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN INVENTORY filer for R668-AD-1021'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1021',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668AD1021_RGinv.new(logger),
+                              logger)
+    logger.info 'Initializing LCRP INVENTORY filer for R668-AD-1021'
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1021',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668AD1021_LCRP.new(logger),
+                              logger)
+
     @my_connections = DT_Connections.new(logger)
     @logger = logger
   end
@@ -159,6 +255,7 @@ class DT_Transfers
 
   def get_transfer (vendor, protocol, file_type)
     @transfers.each do |this_transfer|
+      @logger.debug "->#{this_transfer.vendor}<- ->#{this_transfer.protocol}<- ->#{this_transfer.file_type}<-"
        if this_transfer.vendor == vendor and
          this_transfer.protocol == protocol and
          this_transfer.file_type == file_type
@@ -214,18 +311,27 @@ class DT_Transfers
 
       @logger.info("#{num_to_process} to process")
 
-      insert_statement = INSERT_STATEMENTS[(this_transfer.file_type+'_'+this_transfer.file_version).to_sym]
-      insert_statement += this_transfer.filer.writer(this_transfer.vendor)
+      insert_clause = INSERT_STATEMENTS[(this_transfer.file_type+'_'+this_transfer.file_version).to_sym]
+      value_clauses = this_transfer.filer.writer(this_transfer.vendor)
 
-      @logger.debug (insert_statement)
+      num_of_frames = 0
+      while value_clauses.count > 0 do
+        num_of_frames += 1
+        @logger.debug("Number of values left ... ->#{value_clauses.count}<-")
 
-      begin
-        this_connection.query(insert_statement)
-      rescue Mysql2::Error => e
-        @logger.error "DB Insert failure - #{e.message}"
-        exit -1
+        value_frame = value_clauses.slice!(0, (value_clauses.count < INSERT_FRAME) ? value_clauses.count : INSERT_FRAME)
+        insert_statement = insert_clause + value_frame.join(",\n")
+
+        @logger.debug "Insert statement for frame ->#{num_of_frames}<- ..."
+        @logger.debug "#{insert_statement}"
+
+        begin
+         this_connection.query(insert_statement)
+         rescue Mysql2::Error => e
+           @logger.error "DB Insert failure - #{e.message}"
+           exit -1
+        end
       end
-
 #     begin
 #        this_connection.query('CALL load_dts_specimen_inventory_v1_0')
 #      rescue Mysql2::Error => e

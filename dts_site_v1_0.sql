@@ -9,7 +9,7 @@ CREATE TABLE dts_site_v1_0 (
   site_country           varchar(50)  DEFAULT NULL,
   site_postal_code       varchar(50)  DEFAULT NULL,
   site_phone             varchar(50)  DEFAULT NULL,
-  site_site_fax          varchar(50)  DEFAULT NULL,
+  site_fax               varchar(50)  DEFAULT NULL,
   site_FPFV              date         DEFAULT NULL,
   site_LPLV              date         DEFAULT NULL,
   planned_enrollment     int(11)      DEFAULT NULL,

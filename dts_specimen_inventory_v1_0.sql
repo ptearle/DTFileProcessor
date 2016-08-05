@@ -12,6 +12,7 @@ CREATE TABLE dts_specimen_inventory_v1_0 (
   specimen_barcode      varchar(50)  DEFAULT NULL,
   specimen_identifier   varchar(50)  DEFAULT NULL,
   specimen_type         varchar(50)  DEFAULT NULL,
+  specimen_name         varchar(50)  DEFAULT NULL,
   specimen_parent_id    varchar(50)  DEFAULT NULL,
   specimen_ischild      varchar(50)  DEFAULT NULL,
   specimen_condition    varchar(50)  DEFAULT NULL,
