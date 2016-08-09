@@ -17,8 +17,8 @@ begin
   if ARGV.count != 4
     logger.error 'Invalid number of arguments.'
     logger.error 'Usage: dt_file_processor <vendor location> <protocol> <file type> <env>'
-    logger.error 'Where <vendor location> e.g. covance_ind'
-    logger.error '      <protocol> e.g. CA180001'
+    logger.error 'Where <vendor location> e.g. ICON'
+    logger.error '      <protocol> e.g. CA180-001'
     logger.error '      <file type> is CUMULATIVE or INCREMENTAL'
     logger.error '      <env> is PROD or TEST'
     exit -1

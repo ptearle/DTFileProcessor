@@ -1,4 +1,110 @@
 require 'mysql2'
+class CA018001_CTMS
+  def initialize(logger)
+    @logger = logger
+    @logger.info "#{self.class.name} filer initialized"
+  end
+
+  def reader(inbound_file)
+    @logger.debug "File name is ->#{inbound_file}<-"
+    @logger.info "#{self.class.name} reader start"
+    @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: "\r\n", encoding: 'windows-1256:utf-8')
+    @logger.info "#{self.class.name} reader end"
+    @inbound_lines.length
+  end
+
+  def processor(this_connection)
+    @logger.info "#{self.class.name} processor"
+
+    @processing_lines = Array.new
+    lines = 0
+    num_distinct_lines = 0
+
+    @inbound_lines.each do |inline|
+      found = false
+      lines += 1
+
+      # Only process Principle Investigator lines
+
+      if inline[28] != 'Yes'
+        next
+      end
+
+      # if site id is not there error and ignore
+
+      if inline[4] == ''
+        @logger.error 'Missing site id, unable to load ...'
+        @logger.error "->#{inline}<-"
+        next
+      end
+
+      @processing_lines.each do |distinct_line|
+
+        # see if we actually need the line in the file ... Site Id already seen, then ignore
+        if inline[4] == distinct_line[4]
+          # If there is a dup ... log as an error and ignore
+          @logger.error 'Duplicate Site line found ...'
+          @logger.error "->#{distinct_line}<-"
+          found = true
+          break
+        end
+      end
+
+      if !found
+        @processing_lines << inline
+        num_distinct_lines += 1
+      end
+    end
+
+    @logger.info "#{self.class.name} processor end"
+    @processing_lines.length
+  end
+
+  def writer(vendor)
+    @logger.info "#{self.class.name} writer start"
+
+    if @processing_lines.count == 0
+      @logger.info ("Nothing to insert :(")
+      exit 0
+    end
+
+    values_clause = Array.new
+
+    @processing_lines.each do |outline|
+
+      address = outline[10]
+              + ((outline[11].nil?) ? '' : ", #{outline[11]}")
+              + ((outline[12].nil?) ? '' : ", #{outline[12]}")
+
+      state   = (outline[14] == 'MA') ? 'Massachusetts' : outline[14]
+
+      values_clause <<
+              " (#{outline[5].insert_value}"                          + # study_protocol_id
+              "  #{outline[4].insert_value}"                          + # site_number
+              "  #{outline[9].insert_value}"                          + # site_name
+              "  #{address.insert_value}"                             + # site_address
+              "  #{outline[13].insert_value}"                         + # site_city
+              "  #{state.insert_value}"                               + # site_state
+              "  #{outline[2].insert_value}"                          + # site_country
+              "  #{outline[15].insert_value}"                         + # site_postal_code
+              "  #{outline[17].insert_value}"                         + # site_phone
+              "  #{outline[18].insert_value}"                         + # site_fax
+              ' NULL,'                                                + # site_FPFV
+              ' NULL,'                                                + # site_LPLV
+              ' NULL,'                                                + # planned_enrollment
+              "  #{outline[3].insert_value}"                          + # site_PI
+              "  #{outline[16].insert_value}"                         + # site_PI_email
+              ' NULL,'                                                + # site_coordinator
+              ' NULL,'                                                + # site_coordinator_email
+              "  #{outline[20].insert_value}"                         + # site_status
+              "  '#{vendor}'"                                         + # vendor_code
+              ' )'
+    end
+
+    @logger.info "#{self.class.name} writer end"
+    values_clause
+  end
+end
 
 class CA018001_EDD
   def initialize(logger)
@@ -87,7 +193,10 @@ class CA018001_EDD
                        "  '#{is_child}',"                                         + # specimen_ischild
                        '  NULL,'                                                  + # specimen_condition
                        "  'In Inventory',"                                        + # specimen_status
+                       '  NULL,'                                                  + # specimen_comment
                        '  NULL,'                                                  + # specimen_shipdate
+                       '  NULL,'                                                  + # shipped_location
+                       '  NULL,'                                                  + # testing_description
                        "  '#{vendor}'"                                            + # vendor_code
                        " )"
     end
@@ -155,7 +264,10 @@ class CA018001_BMS
                        " #{specimen_ischild},"                                    + # specimen_ischild
                        ' NULL,'                                                   + # specimen_condition
                        " '#{outline[11].strip}',"                                 + # specimen_status
+                       '  NULL,'                                                  + # specimen_comment
                        " #{specimen_shipdate},"                                   + # specimen_shipdate
+                       '  NULL,'                                                  + # shipped_location
+                       '  NULL,'                                                  + # testing_description
                        " '#{vendor}'"                                             + # vendor_code
                        ')'
     end
@@ -195,7 +307,7 @@ class CA018001_QINV
                 :UNSCHED_37 => 'PROG/ UNSCH IHC C',
                 :UNSCHED_38 => 'PROG/ UNSCH RNA A',
                 :UNSCHED_39 => 'PROG/ UNSCH RNA B',
-                :UNSCHED_4	 => 'C1 D1 EOI PK',
+                :UNSCHED_4	=> 'C1 D1 EOI PK',
                 :UNSCHED_40 => 'PROG/ UNSCH',
                 :UNSCHED_41 => 'TRACK 1 RUN-IN EOI PK',
                 :UNSCHED_42 => 'TRACK 1 RUN-IN D1',
@@ -373,7 +485,6 @@ class CA018001_QASY
        next
       end
 
-@logger.debug "Found ->#{specimens.count}<- speciemens for accession ->#{current_accession}<-"
       # add a adt result for each specimen in the accession
       specimens.each do |this_specimen|
         assayline[5] = "#{this_specimen['barcode']}"

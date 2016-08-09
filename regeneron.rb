@@ -1,8 +1,6 @@
 require 'mysql2'
 
-require_relative 'dt_utils'
-
-class Regenoeron_site
+class Regeneron_site
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer initialized"
@@ -58,27 +56,27 @@ class Regenoeron_site
 
     @processing_lines.each do |outline|
 
-      values_clause << 
-                       " (#{outline[0].insert_value}"                          + # study_protocol_id
-                       "  #{outline[2].insert_value}"                          + # site_number
-                       "  #{outline[3].insert_value}"                          + # site_name
-                       ' NULL,'                                                + # site_address
-                       ' NULL,'                                                + # site_city
-                       ' NULL,'                                                + # site_state
-                       "  #{outline[6].insert_value}"                          + # site_country
-                       ' NULL,'                                                + # site_postal_code
-                       ' NULL,'                                                + # site_phone
-                       ' NULL,'                                                + # site_fax
-                       ' NULL,'                                                + # site_FPFV
-                       ' NULL,'                                                + # site_LPLV
-                       ' NULL,'                                                + # planned_enrollment
-                       "  #{outline[4].insert_value}"                          + # site_PI
-                       ' NULL,'                                                + # site_PI_email
-                       ' NULL,'                                                + # site_coordinator
-                       ' NULL,'                                                + # site_coordinator_email
-                       "  '#{vendor}'"                                         + # vendor_code
-                       ' )'
-    end                                                                               
+      values_clause <<
+          " (#{outline[0].insert_value}"                          + # study_protocol_id
+              "  #{outline[2].insert_value}"                          + # site_number
+              "  #{outline[3].insert_value}"                          + # site_name
+              ' NULL,'                                                + # site_address
+              ' NULL,'                                                + # site_city
+              ' NULL,'                                                + # site_state
+              "  #{outline[6].insert_value}"                          + # site_country
+              ' NULL,'                                                + # site_postal_code
+              ' NULL,'                                                + # site_phone
+              ' NULL,'                                                + # site_fax
+              ' NULL,'                                                + # site_FPFV
+              ' NULL,'                                                + # site_LPLV
+              ' NULL,'                                                + # planned_enrollment
+              "  #{outline[4].insert_value}"                          + # site_PI
+              ' NULL,'                                                + # site_PI_email
+              ' NULL,'                                                + # site_coordinator
+              ' NULL,'                                                + # site_coordinator_email
+              "  '#{vendor}'"                                         + # vendor_code
+              ' )'
+    end
 
     @logger.info "#{self.class.name} writer end"
     values_clause
@@ -119,25 +117,25 @@ class Regeneron_subject
     @processing_lines.each do |outline|
 
       values_clause <<
-          " (#{outline[0].insert_value}"                          + # study_protocol_id    
-          "  #{outline[2].insert_value}"                          + # site_number          
-          "  #{outline[1][-3..-1].insert_value}"                  + # subject_code
-          "  #{outline[1].insert_value}"                          + # subject_external_id
-          ' NULL,'                                               + # gender               
-          ' NULL,'                                               + # initials             
-          ' NULL,'                                               + # enrollment_status
-          ' NULL,'                                               + # date_of_birth        
-          ' NULL,'                                               + # address              
-          ' NULL,'                                               + # city                 
-          ' NULL,'                                               + # state
-          ' NULL,'                                               + # region
-          ' NULL,'                                               + # country
-          ' NULL,'                                               + # postcode
-          ' NULL,'                                               + # primary_race
-          ' NULL,'                                               + # secondary_race
-          ' NULL,'                                               + # ethnicity
-          "  '#{vendor}'"                                         + # vendor_code
-          " )"
+          " (#{outline[0].insert_value}"                             + # study_protocol_id
+              "  #{outline[2].insert_value}"                         + # site_number
+              "  #{outline[1][-3..-1].insert_value}"                 + # subject_code
+              "  #{outline[1].insert_value}"                         + # subject_external_id
+              ' NULL,'                                               + # gender
+              ' NULL,'                                               + # initials
+              ' NULL,'                                               + # enrollment_status
+              ' NULL,'                                               + # date_of_birth
+              ' NULL,'                                               + # address
+              ' NULL,'                                               + # city
+              ' NULL,'                                               + # state
+              ' NULL,'                                               + # region
+              ' NULL,'                                               + # country
+              ' NULL,'                                               + # postcode
+              ' NULL,'                                               + # primary_race
+              ' NULL,'                                               + # secondary_race
+              ' NULL,'                                               + # ethnicity
+              "  '#{vendor}'"                                        + # vendor_code
+              " )"
     end
 
     @logger.info "#{self.class.name} writer end"
@@ -148,10 +146,13 @@ end
 class Regeneron_RGinv
 
   SPECIMEN_TYPE = {
-      'Hu Whole Blood'     => 'Whole Blood',
-      'Hu Plasma (EDTA)'   => 'Plasma',
-      'Hu Serum'           => 'Serum',
-      'Other'              => 'Other',
+      'Urine, no preservative' => 'Urine',
+      'Plasma, NaCitrate'      => 'Plasma',
+      'Biopsy'                 => 'Biopsy',
+      'Hu Whole Blood'         => 'Whole Blood',
+      'Hu Plasma (EDTA)'       => 'Plasma',
+      'Hu Serum'               => 'Serum',
+      'Other'                  => 'Other',
   }.freeze
 
   VISIT_MAP = {
@@ -161,10 +162,15 @@ class Regeneron_RGinv
       :V4       => 'VISIT4',
       :V5       => 'VISIT5',
       :V6       => 'VISIT6',
+      :V7       => 'VISIT7',
       :V8       => 'VISIT8',
+      :V9       => 'VISIT9',
       :V10      => 'VISIT10',
+      :V11      => 'VISIT11',
       :V12      => 'VISIT12',
+      :V13      => 'VISIT13',
       :V14      => 'VISIT14',
+      :V15      => 'VISIT15',
       :V16      => 'VISIT16',
       :V17      => 'VISIT17',
       :V18      => 'VISIT18',
@@ -215,27 +221,28 @@ class Regeneron_RGinv
 
       values_clause <<
           " (#{outline[0].insert_value}"                             + # study_protocol_id
-          "  #{outline[2].insert_value}"                             + # site_number
-          "  #{outline[6].insert_value}"                             + # subject_code
-          ' NULL,'                                                   + # subject_gender
-          ' NULL,'                                                   + # subject_DOB
-          "  STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"   + # specimen_collect_date
-          "  STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y %T'),"+ # specimen_collect_time
-          "  STR_TO_DATE(#{outline[17].insert_value} '%c/%e/%Y %T'),"+ # specimen_receive_datetime
-          "  #{VISIT_MAP[('V' + outline[7]).to_sym].insert_value}"   + # visit_name
-          "  #{outline[9].insert_value}"                             + # specimen_barcode
-          "  #{outline[4].insert_value}"                             + # specimen_identifier
-          "  #{SPECIMEN_TYPE[outline[11].strip].insert_value}"       + # specimen_type
-          "  #{outline[10].insert_value}"                            + # specimen_name
-          ' NULL,'                                                   + # specimen_parent
-          "  'N',"                                                   + # specimen_ischild
-          "  #{outline[13].insert_value}"                            + # specimen_condition
-          "  'In Inventory',"                                        + # specimen_status
-          "  #{outline[28].insert_value}"                            + # specimen_comment
-          ' NULL,'                                                   + # shipped_date
-          ' NULL,'                                                   + # shipped_location
-          "  '#{vendor}'"                                            + # vendor_code
-          " )"
+              "  #{outline[2].insert_value}"                             + # site_number
+              "  #{outline[6].insert_value}"                             + # subject_code
+              ' NULL,'                                                   + # subject_gender
+              ' NULL,'                                                   + # subject_DOB
+              "  STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"   + # specimen_collect_date
+              "  STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y %T'),"+ # specimen_collect_time
+              "  STR_TO_DATE(#{outline[17].insert_value} '%c/%e/%Y %T'),"+ # specimen_receive_datetime
+              "  #{VISIT_MAP[('V' + outline[7]).to_sym].insert_value}"   + # visit_name
+              "  #{outline[9].insert_value}"                             + # specimen_barcode
+              "  #{outline[4].insert_value}"                             + # specimen_identifier
+              "  #{SPECIMEN_TYPE[outline[11].strip].insert_value}"       + # specimen_type
+              "  #{outline[10].insert_value}"                            + # specimen_name
+              ' NULL,'                                                   + # specimen_parent
+              "  'N',"                                                   + # specimen_ischild
+              "  #{outline[13].insert_value}"                            + # specimen_condition
+              "  'In Inventory',"                                        + # specimen_status
+              "  #{outline[28].insert_value}"                            + # specimen_comment
+              ' NULL,'                                                   + # shipped_date
+              ' NULL,'                                                   + # shipped_location
+              ' NULL,'                                                   + # testing_description
+              "  '#{vendor}'"                                            + # vendor_code
+              " )"
     end
 
     @logger.info "#{self.class.name} writer end"
@@ -246,18 +253,21 @@ end
 class Regeneron_LCRP
 
   SPECIMEN_TYPE = {
-	  :S0	  => 'UNKNOWN',
-	  :S13	=> 'Plasma',
-	  :S16	=> 'Urine',
-	  :S160	=> 'Plasma',
-	  :S2	  => 'Serum',
-	  :S3   => 'Serum',
-	  :S31	=> 'Whole Blood',
-	  :S4	  => 'Serum',
-    :S46	=> 'Whole Blood',
-    :S50  => 'Whole Blood',
-	  :S725	=> 'DNA',
-    :S908	=> 'Whole Blood'
+      :S0	  => 'UNKNOWN',
+      :S13	=> 'Plasma',
+      :S16	=> 'Urine',
+      :S160	=> 'Plasma',
+      :S2	  => 'Serum',
+      :S3   => 'Serum',
+      :S31	=> 'Whole Blood',
+      :S4	  => 'Serum',
+      :S46	=> 'Whole Blood',
+      :S50  => 'Whole Blood',
+      :S725	=> 'DNA',
+      :S908	=> 'Whole Blood',
+      :S9   => 'Plasma',
+      :S533 => 'Biospy',
+      :S15  => 'Urine',
   }.freeze
 
   def initialize(logger)
@@ -284,7 +294,7 @@ class Regeneron_LCRP
       found = false
       lines += 1
 
-      if specline[15] == '0' or specline[34] == ''
+      if specline[15] == '0' or specline[34].nil?
         next
       end
 
@@ -312,19 +322,21 @@ class Regeneron_LCRP
 
       if outline[2].strip == 'SMART'      or
          outline[2].strip == 'DR.SMART'   or
-         outline[2].strip == 'SMRT800202'
-        site_id    = 'De-Identified'
-        subject_id = 'De-Identified'
+         outline[2].strip == 'Dr.Smart'   or
+         outline[2].strip == 'SMRT800202' or
+         outline[2].strip == 'SMRT602090'
+        site_id     = 'De-Identified'
+        subject_id  = 'De-Identified'
       else
-        site_id    = outline[2].rjust(6, '0')
-        subject_id = outline[3][-3..-1]
+        site_id     = outline[2].rjust(6, '0')
+        subject_id  = outline[3][-3..-1]
       end
 
       shipped_date  = (outline[35].nil?) ? ' NULL,' : "  STR_TO_DATE(#{outline[35].insert_value} '%d%b%Y'),"
       specimen_type = (outline[23].nil?) ? ' NULL,' : " #{SPECIMEN_TYPE[('S' + outline[23]).to_sym].insert_value}"
 
-      if (outline[19].nil? and outline[20].nil?)
-        testing_desc = ' NULL,'
+      if outline[19].nil? and outline[20].nil?
+        testing_desc  = ' NULL,'
       elsif outline[20].nil?
         testing_desc  = "'#{outline[19].strip}',"
       elsif outline[19].nil?
@@ -333,12 +345,12 @@ class Regeneron_LCRP
         testing_desc  = "'#{outline[19].strip} / #{outline[20].strip}',"
       end
 
-@logger.debug("Shipped date ->#{outline[35]}<-")
+      @logger.debug("Shipped date ->#{outline[35]}<-")
 
       values_clause <<
           " (#{outline[1].insert_value}"                                    + # study_protocol_id
-          "  #{site_id.insert_value}"                                       + # site_number
-          "  #{subject_id.insert_value}"                                    + # subject_code
+              "  #{site_id.insert_value}"                                   + # site_number
+              "  #{subject_id.insert_value}"                                + # subject_code
               ' NULL,'                                                      + # subject_gender
               ' NULL,'                                                      + # subject_DOB
               "  STR_TO_DATE(#{outline[6].insert_value} '%d%b%Y'),"         + # specimen_collect_date

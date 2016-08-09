@@ -1,13 +1,14 @@
 require 'aws-sdk'
 require 'fileutils'
 
-require_relative 'r668ad1021'
+require_relative 'regeneron'
+require_relative 'r1033_hv_1204'
 require_relative 'ca018001'
 require_relative 'dt_config'
 
 class String
   def insert_value
-    "  #{'\''+self.strip+'\''},"
+    "  #{'\''+self.strip.gsub(/'/,  '\'\'') +'\''},"
   end
 end
 
@@ -65,7 +66,10 @@ class DT_Transfers
               specimen_ischild,
               specimen_condition,
               specimen_status,
+              specimen_comment,
               shipped_date,
+              shipped_location,
+              testing_description,
               vendor_code
              ) VALUES',
       :ASSAY_V1_0 =>
@@ -135,6 +139,7 @@ class DT_Transfers
               site_PI_email,
               site_coordinator,
               site_coordinator_email,
+              site_status,
               vendor_code
              ) VALUES',
       :SUBJECT_V1_0 =>
@@ -163,6 +168,15 @@ class DT_Transfers
 
   def initialize(logger)
     @transfers = Array.new
+    logger.info 'Initializing ICON SITE filer for CA018-001'
+    @transfers << DT_File.new('ICON',
+                              'BMS',
+                              'CA018-001',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              CA018001_CTMS.new(logger),
+                              logger)
     logger.info 'Initializing LCRP INVENTORY filer for CA018-001'
     @transfers << DT_File.new('LCRP',
                               'BMS',
@@ -215,7 +229,7 @@ class DT_Transfers
                               'SITE',
                               'V1_0',
                               'CUMULATIVE',
-                              R668AD1021_site.new(logger),
+                              Regeneron_site.new(logger),
                               logger)
     logger.info 'Initializing RGRN SITE filer for R668-AD-1021'
     @transfers << DT_File.new('RGRN',
@@ -224,7 +238,7 @@ class DT_Transfers
                               'SUBJECT',
                               'V1_0',
                               'CUMULATIVE',
-                              R668AD1021_subject.new(logger),
+                              Regeneron_subject.new(logger),
                               logger)
     logger.info 'Initializing RGRN INVENTORY filer for R668-AD-1021'
     @transfers << DT_File.new('RGRN',
@@ -233,7 +247,7 @@ class DT_Transfers
                               'INVENTORY',
                               'V1_0',
                               'CUMULATIVE',
-                              R668AD1021_RGinv.new(logger),
+                              Regeneron_RGinv.new(logger),
                               logger)
     logger.info 'Initializing LCRP INVENTORY filer for R668-AD-1021'
     @transfers << DT_File.new('LCRP',
@@ -242,8 +256,81 @@ class DT_Transfers
                               'INVENTORY',
                               'V1_0',
                               'CUMULATIVE',
-                              R668AD1021_LCRP.new(logger),
+                              Regeneron_LCRP.new(logger),
                               logger)
+    logger.info 'Initializing RGRN SITE filer for R727-CL-1110'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1110',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              Regeneron_site.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SITE filer for R727-CL-1110'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1110',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              Regeneron_subject.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN INVENTORY filer for R727-CL-1110'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1110',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              Regeneron_RGinv.new(logger),
+                              logger)
+    logger.info 'Initializing LCRP INVENTORY filer for R727-CL-1110'
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R727-CL-1110',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              Regeneron_LCRP.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SITE filer for R1033-HV-1204'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1204',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              Regeneron_site.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SITE filer for R1033-HV-1204'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1204',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              Regeneron_subject.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN INVENTORY filer for R1033-HV-1204'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1204',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1204_RGInv.new(logger),
+                              logger)
+    logger.info 'Initializing LCRP INVENTORY filer for R1033-HV-1204'
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R1033-HV-1204',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1204_LCRP.new(logger),
+                              logger)
+
 
     @my_connections = DT_Connections.new(logger)
     @logger = logger
@@ -306,7 +393,7 @@ class DT_Transfers
       @logger.info("#{num_in} read in")
 
       if (num_to_process = this_transfer.filer.processor(this_connection)) == 0
-        logger.info 'No records to process'
+        @logger.info 'No records to process'
       end
 
       @logger.info("#{num_to_process} to process")
@@ -317,13 +404,9 @@ class DT_Transfers
       num_of_frames = 0
       while value_clauses.count > 0 do
         num_of_frames += 1
-        @logger.debug("Number of values left ... ->#{value_clauses.count}<-")
 
         value_frame = value_clauses.slice!(0, (value_clauses.count < INSERT_FRAME) ? value_clauses.count : INSERT_FRAME)
         insert_statement = insert_clause + value_frame.join(",\n")
-
-        @logger.debug "Insert statement for frame ->#{num_of_frames}<- ..."
-        @logger.debug "#{insert_statement}"
 
         begin
          this_connection.query(insert_statement)

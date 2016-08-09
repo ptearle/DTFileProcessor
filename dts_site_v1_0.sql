@@ -17,6 +17,7 @@ CREATE TABLE dts_site_v1_0 (
   site_PI_email          varchar(50)  DEFAULT NULL,
   site_coordinator       varchar(50)  DEFAULT NULL,
   site_coordinator_email varchar(50)  DEFAULT NULL,
+  site_status            varchar(50)  DEFAULT NULL,
   vendor_code            varchar(255) NOT NULL,
   record_status          varchar(50)  NOT NULL DEFAULT 'new',
   record_created         timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
