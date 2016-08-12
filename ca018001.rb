@@ -381,7 +381,10 @@ class CA018001_QINV
           "   #{specimen_ischild},"                                   + # specimen_ischild
           "   #{specimen_condition},"                                 + # specimen_condition
           "   'In Inventory',"                                        + # specimen_status
+          '  NULL,'                                                   + # specimen_comment
           "   #{specimen_shipdate},"                                  + # specimen_shipdate
+          '  NULL,'                                                   + # shipped_location
+          '  NULL,'                                                   + # testing_description
           "  '#{vendor}'"                                             + # vendor_code
           ')'
     end
@@ -501,61 +504,60 @@ class CA018001_QASY
   def writer(vendor)
     @logger.info "#{self.class.name} writer start"
 
-    values_clause = ''
+    values_clause = Array.new
 
     @processing_lines.each do |outline|
 
       assay_date         = (outline[9].nil?)   ? 'NULL'   : "STR_TO_DATE('#{outline[9].strip}', '%Y-%m-%d')"
       reported_datettime = (outline[12].nil?)  ? 'NULL'   : "STR_TO_DATE('#{outline[12].strip}', '%Y-%m-%d %k:%i')"
-      visit_name         = VISIT_MAP[outline[22].to_sym]
 
-      values_clause
-          " ('#{outline[0].strip}',"                                        + # study_protocol_id
-          "  '#{outline[1].strip}',"                                        + # site_number
-          "  '#{outline[2].strip}',"                                        + # subject_number
-          "  STR_TO_DATE('#{outline[3].strip}',  '%Y-%m-%d'),"              + # collection_date
-          "  '#{visit_name}',"                                              + # visit_name
-          "  #{(outline[5].nil?) ? 'NULL' : '\''+outline[5].strip+'\''},"   + # lab_barcode
-          "  #{(outline[6].nil?) ? 'NULL' : '\''+outline[6].strip+'\''},"   + # analysis_barcode
-          "  #{(outline[7].nil?) ? 'NULL' : '\''+outline[7].strip+'\''},"   + # assay_batch_id
-          "  #{(outline[8].nil?) ? 'NULL' : '\''+outline[8].strip+'\''},"   + # exclusion_flag
-          "  #{assay_date},"                                                + # assay_date
-          "  #{(outline[10].nil?) ? 'NULL' : '\''+outline[10].strip+'\''}," + # result_repeated
-          "  #{(outline[11].nil?) ? 'NULL' : '\''+outline[11].strip+'\''}," + # replicate_number
-          "  #{reported_datettime},"                                        + # reported_datetime
-          "  #{(outline[13].nil?) ? 'NULL' : '\''+outline[13].strip+'\''}," + # reported_rr_high
-          "  #{(outline[14].nil?) ? 'NULL' : '\''+outline[14].strip+'\''}," + # reported_rr_low
-          "  #{(outline[15].nil?) ? 'NULL' : '\''+outline[15].strip+'\''}," + # result_categorical
-          "  #{(outline[16].nil?) ? 'NULL' : '\''+outline[16].strip+'\''}," + # result_categorical_code_list
-          "  #{(outline[17].nil?) ? 'NULL' : '\''+outline[17].strip+'\''},"	+ # result_category
-          "  #{(outline[18].nil?) ? 'NULL' : '\''+outline[18].strip+'\''}," + # assay_comment
-          "  #{(outline[19].nil?) ? 'NULL' : outline[19].strip},"           + # result_numeric
-          "  #{(outline[20].nil?) ? 'NULL' : '\''+outline[20].strip+'\''}," + # result_numeric_precision
-          "  #{(outline[21].nil?) ? 'NULL' : '\''+outline[21].strip+'\''}," + # result_type
-          "  #{(outline[22].nil?) ? 'NULL' : '\''+outline[22].strip+'\''}," + # result_units
-          "  #{(outline[23].nil?) ? 'NULL' : '\''+outline[23].strip+'\''}," + # assay_run_id
-          "  #{(outline[24].nil?) ? 'NULL' : '\''+outline[24].strip+'\''}," + # vendor_id
-          "  #{(outline[25].nil?) ? 'NULL' : '\''+outline[25].strip+'\''}," + # analyte
-          "  #{(outline[26].nil?) ? 'NULL' : '\''+outline[26].strip+'\''}," + # assay_code
-          "  #{(outline[27].nil?) ? 'NULL' : '\''+outline[27].strip+'\''}," + # assay_description
-          "  #{(outline[28].nil?) ? 'NULL' : '\''+outline[28].strip+'\''}," + # assay_method
-          "  #{(outline[29].nil?) ? 'NULL' : '\''+outline[29].strip+'\''}," + # assay_name
-          "  #{(outline[30].nil?) ? 'NULL' : '\''+outline[30].strip+'\''}," + # assay_protocol_id
-          "  #{(outline[31].nil?) ? 'NULL' : '\''+outline[31].strip+'\''}," + # assay_protocol_version
-          "  #{(outline[32].nil?) ? 'NULL' : '\''+outline[32].strip+'\''}," + # equipment_used
-          "  #{(outline[33].nil?) ? 'NULL' : '\''+outline[33].strip+'\''}," + # lab_assay_protocol_id
-          "  #{(outline[34].nil?) ? 'NULL' : '\''+outline[34].strip+'\''}," + # lab_assay_protocol_version
-          "  #{(outline[35].nil?) ? 'NULL' : '\''+outline[35].strip+'\''}," + # lab_test_name
-          "  #{(outline[36].nil?) ? 'NULL' : '\''+outline[36].strip+'\''}," + # lab_test_number
-          "  #{(outline[37].nil?) ? 'NULL' : '\''+outline[37].strip+'\''}," + # LOINC_code
-          "  #{(outline[38].nil?) ? 'NULL' : '\''+outline[38].strip+'\''}," + # sample_storage_conditions
-          "  #{(outline[39].nil?) ? 'NULL' : '\''+outline[39].strip+'\''}," + # sensitivity
-          "  #{(outline[40].nil?) ? 'NULL' : '\''+outline[40].strip+'\''}," + # assay_status
-          "  #{(outline[41].nil?) ? 'NULL' : '\''+outline[41].strip+'\''}," + # test_type
-		      "  '#{vendor}'"                                                   + # vendor_code
+      values_clause <<
+          " (#{outline[0].insert_value}"                              + # study_protocol_id
+          "  #{outline[1].insert_value}"                              + # site_number  #{outline[6].insert_value}
+          "  #{outline[2].insert_value}"                              + # subject_number
+          "  STR_TO_DATE('#{outline[3].strip}',  '%Y-%m-%d'),"        + # collection_date
+          '  NULL,'                                                   + # visit_name
+          "  #{outline[5].insert_value}"                              + # lab_barcode
+          "  #{outline[6].insert_value}"                              + # analysis_barcode
+          "  #{outline[7].insert_value}"                              + # assay_batch_id
+          "  #{outline[8].insert_value}"                              + # exclusion_flag
+          "  #{assay_date},"                                          + # assay_date
+          "  #{outline[10].insert_value}"                             + # result_repeated
+          "  #{outline[11].insert_value}"                             + # replicate_number
+          "  #{reported_datettime},"                                  + # reported_datetime
+          "  #{outline[13].insert_value}"                             + # reported_rr_high
+          "  #{outline[14].insert_value}"                             + # reported_rr_low
+          "  #{outline[15].insert_value}"                             + # result_categorical
+          "  #{outline[16].insert_value}"                             + # result_categorical_code_list
+          "  #{outline[17].insert_value}"                             + # result_category
+          "  #{outline[18].insert_value}"                             + # assay_comment
+          "  #{outline[19].insert_value}"                             + # result_numeric
+          "  #{outline[20].insert_value}"                             + # result_numeric_precision
+          "  #{outline[21].insert_value}"                             + # result_type
+          "  #{outline[22].insert_value}"                             + # result_units
+          "  #{outline[23].insert_value}"                             + # assay_run_id
+          "  #{outline[24].insert_value}"                             + # vendor_id
+          "  #{outline[25].insert_value}"                             + # analyte
+          "  #{outline[26].insert_value}"                             + # assay_code
+          "  #{outline[27].insert_value}"                             + # assay_description
+          "  #{outline[28].insert_value}"                             + # assay_method
+          "  #{outline[29].insert_value}"                             + # assay_name
+          "  #{outline[30].insert_value}"                             + # assay_protocol_id
+          "  #{outline[31].insert_value}"                             + # assay_protocol_version
+          "  #{outline[32].insert_value}"                             + # equipment_used
+          "  #{outline[33].insert_value}"                             + # lab_assay_protocol_id
+          "  #{outline[34].insert_value}"                             + # lab_assay_protocol_version
+          "  #{outline[35].insert_value}"                             + # lab_test_name
+          "  #{outline[36].insert_value}"                             + # lab_test_number
+          "  #{outline[37].insert_value}"                             + # LOINC_code
+          "  #{outline[38].insert_value}"                             + # sample_storage_conditions
+          "  #{outline[39].insert_value}"                             + # sensitivity
+          "  #{outline[40].insert_value}"                             + # assay_status
+          "  #{outline[41].insert_value}"                             + # test_type
+		      "  '#{vendor}'"                                             + # vendor_code
 		  ')'
-    end                                                               
-                                                                      
+    end
+
     @logger.info "#{self.class.name} writer end"
     values_clause
   end                                                                 

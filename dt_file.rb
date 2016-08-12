@@ -1,8 +1,12 @@
 require 'aws-sdk'
 require 'fileutils'
 
+# Regeneron
 require_relative 'regeneron'
 require_relative 'r1033_hv_1204'
+require_relative 'R727_CL_1118'
+
+# BMS FRACTION
 require_relative 'ca018001'
 require_relative 'dt_config'
 
@@ -330,7 +334,42 @@ class DT_Transfers
                               'CUMULATIVE',
                               R1033_HV_1204_LCRP.new(logger),
                               logger)
-
+    logger.info 'Initializing RGRN SITE filer for R727_CL_1118'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1118',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1118_site.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SUBJECT filer for R727_CL_1118'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1118',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1118_subject.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN INVENTORY filer for R727_CL_1118'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1118',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1118_RGRNinv.new(logger),
+                              logger)
+    logger.info 'Initializing LCRP INVENTORY filer for R727_CL_1118'
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R727-CL-1118',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1118_LCRPInv.new(logger),
+                              logger)
 
     @my_connections = DT_Connections.new(logger)
     @logger = logger
