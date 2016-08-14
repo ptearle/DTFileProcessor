@@ -5,6 +5,7 @@ require 'fileutils'
 require_relative 'regeneron'
 require_relative 'r1033_hv_1204'
 require_relative 'R727_CL_1118'
+require_relative 'R727_CL_1112'
 
 # BMS FRACTION
 require_relative 'ca018001'
@@ -235,7 +236,7 @@ class DT_Transfers
                               'CUMULATIVE',
                               Regeneron_site.new(logger),
                               logger)
-    logger.info 'Initializing RGRN SITE filer for R668-AD-1021'
+    logger.info 'Initializing RGRN SUBJECT filer for R668-AD-1021'
     @transfers << DT_File.new('RGRN',
                               'Regeneron',
                               'R668-AD-1021',
@@ -271,7 +272,7 @@ class DT_Transfers
                               'CUMULATIVE',
                               Regeneron_site.new(logger),
                               logger)
-    logger.info 'Initializing RGRN SITE filer for R727-CL-1110'
+    logger.info 'Initializing RGRN Subject filer for R727-CL-1110'
     @transfers << DT_File.new('RGRN',
                               'Regeneron',
                               'R727-CL-1110',
@@ -307,7 +308,7 @@ class DT_Transfers
                               'CUMULATIVE',
                               Regeneron_site.new(logger),
                               logger)
-    logger.info 'Initializing RGRN SITE filer for R1033-HV-1204'
+    logger.info 'Initializing RGRN Subject filer for R1033-HV-1204'
     @transfers << DT_File.new('RGRN',
                               'Regeneron',
                               'R1033-HV-1204',
@@ -369,6 +370,42 @@ class DT_Transfers
                               'V1_0',
                               'CUMULATIVE',
                               R727_CL_1118_LCRPInv.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SITE filer for R727_CL_1112'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1112',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1112_site.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN SUBJECT filer for R727_CL_1112'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1112',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1112_subject.new(logger),
+                              logger)
+    logger.info 'Initializing RGRN INVENTORY filer for R727_CL_1112'
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R727-CL-1112',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1112_RGRNinv.new(logger),
+                              logger)
+    logger.info 'Initializing LCRP INVENTORY filer for R727_CL_1112'
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R727-CL-1112',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1112_LCRPInv.new(logger),
                               logger)
 
     @my_connections = DT_Connections.new(logger)

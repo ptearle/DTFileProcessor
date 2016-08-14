@@ -219,9 +219,14 @@ class Regeneron_RGinv
 
     @processing_lines.each do |outline|
 
+      if outline[1].nil? and outline[6].nil?
+        outline[1] = 'De-identified'
+        outline[6] = 'De-identified'
+      end
+
       values_clause <<
           " (#{outline[0].insert_value}"                             + # study_protocol_id
-              "  #{outline[2].insert_value}"                             + # site_number
+              "  #{outline[1].insert_value}"                             + # site_number
               "  #{outline[6].insert_value}"                             + # subject_code
               ' NULL,'                                                   + # subject_gender
               ' NULL,'                                                   + # subject_DOB
