@@ -106,6 +106,113 @@ class CA018001_CTMS
   end
 end
 
+
+class CA018001_ivrt
+  def initialize(logger)
+    @logger = logger
+    @logger.info "#{self.class.name} filer Initialized"
+  end
+
+  def reader(inbound_file)
+    @logger.debug "File name is ->#{inbound_file}<-"
+    @logger.info "#{self.class.name} reader start"
+    @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, encoding:'windows-1256:utf-8')
+    @logger.info "#{self.class.class.name} reader end"
+    @inbound_lines.length
+  end
+
+  def processor(this_connection)
+    @logger.info "#{self.class.name} processor start'"
+    @processing_lines = @inbound_lines
+    @logger.info "#{self.class.name} processor end"
+    @processing_lines.length
+  end
+
+  def writer(vendor)
+    @logger.info "#{self.class.name} writer start'"
+
+    if @processing_lines.count == 0
+      logger.info ("Nothing to insert :(")
+      exit 0
+    end
+
+    values_clause = Array.new
+
+    @processing_lines.each do |outline|
+
+      @logger.debug "Field 0 is ->#{outline[0]}<-"
+
+      external_id = outline[1].strip.rjust(4, '0')+'-'+outline[0].strip.rjust(5, '0')
+
+      case outline[3]
+        when 'Screening'
+          values_clause <<
+              " ('CA018-001',"                                           + # study_protocol_id
+                  " #{outline[1].rjust(4, '0').insert_value}"           + # site_number
+                  " #{outline[0].rjust(5, '0').insert_value}"           + # subject_code
+                  " #{external_id.insert_value}"                                     + # subject_external_id
+                  ' NULL,'                                              + # randomization number
+                  ' NULL,'                                              + # gender
+                  ' NULL,'                                              + # initials
+                  "'Screening',"                                       + # enrollment_status
+                  ' NULL,'                                              + # date_of_birth
+                  ' NULL,'                                              + # address
+                  ' NULL,'                                              + # city
+                  ' NULL,'                                              + # state
+                  ' NULL,'                                              + # region
+                  ' NULL,'                                              + # country
+                  ' NULL,'                                              + # postcode
+                  ' NULL,'                                              + # primary_race
+                  ' NULL,'                                              + # secondary_race
+                  ' NULL,'                                              + # ethnicity
+                  ' NULL,'                                              + # treatment_arm
+                  ' NULL,'                                              + # track
+                  " '#{vendor}'"                                        + # vendor_code
+                  ")"
+        when 'Randomization'
+
+          case outline[5]
+            when 'Nivolumab in Combination with BMS-986016'
+              treatment_arm = 'NIVO+BMS986016'
+            when 'Nivolumab in Combination with Dasatinib'
+              treatment_arm = 'NIVO+DASATINIB'
+            else
+              @loger.warn "Unknown treatment arm ->#{outline[6]} on line #{values_clause.length+1}<-"
+              treatment_arm = "Unknown treatment arm ->#{outline[6]}<-"
+          end
+
+          values_clause <<
+              "('CA018-001',"                                           + # study_protocol_id
+                  " #{outline[1].rjust(4, '0').insert_value}"           + # site_number
+                  " #{outline[0].rjust(5, '0').insert_value}"           + # subject_code
+                  " #{external_id.insert_value}"                        + # subject_external_id
+                  " #{outline[6].insert_value}"                         + # randomization number
+                  ' NULL,'                                              + # gender
+                  ' NULL,'                                              + # initials
+                  "'Randomized',"                                      + # enrollment_status
+                  ' NULL,'                                              + # date_of_birth
+                  ' NULL,'                                              + # address
+                  ' NULL,'                                              + # city
+                  ' NULL,'                                              + # state
+                  ' NULL,'                                              + # region
+                  ' NULL,'                                              + # country
+                  ' NULL,'                                              + # postcode
+                  ' NULL,'                                              + # primary_race
+                  ' NULL,'                                              + # secondary_race
+                  ' NULL,'                                              + # ethnicity
+                  " #{treatment_arm.insert_value}"                      + # treatment_arm
+                  " #{outline[7].insert_value}"                         + # track
+                  " '#{vendor}'"                                        + # vendor_code
+                  ")"
+
+      end
+    end
+
+    @logger.info "#{self.class.name} writer end"
+    values_clause
+  end
+end
+
 class CA018001_EDD
   def initialize(logger)
     @logger = logger

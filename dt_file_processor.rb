@@ -8,7 +8,7 @@ require 'aws-sdk'
 require_relative 'dt_file'
 
 logger          = Logger.new('dt_file_processor.log', 'daily')
-logger.level    = Logger::INFO
+logger.level    = Logger::DEBUG
 logger.progname = 'dt_file_processor'
 
 logger.info '****************** START ***********************'

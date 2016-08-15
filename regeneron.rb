@@ -122,6 +122,7 @@ class Regeneron_subject
               "  #{outline[1][-3..-1].insert_value}"                 + # subject_code
               "  #{outline[1].insert_value}"                         + # subject_external_id
               ' NULL,'                                               + # gender
+              ' NULL,'                                               + # randomization_number
               ' NULL,'                                               + # initials
               ' NULL,'                                               + # enrollment_status
               ' NULL,'                                               + # date_of_birth
@@ -134,6 +135,8 @@ class Regeneron_subject
               ' NULL,'                                               + # primary_race
               ' NULL,'                                               + # secondary_race
               ' NULL,'                                               + # ethnicity
+              ' NULL,'                                               + # treatment_arm
+              ' NULL,'                                               + # track
               "  '#{vendor}'"                                        + # vendor_code
               " )"
     end
