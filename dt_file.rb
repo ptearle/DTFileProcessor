@@ -1,12 +1,11 @@
 require 'aws-sdk'
-require 'fileutils'
 
 # Regeneron
 require_relative 'regeneron'
 require_relative 'r1033_hv_1204'
-require_relative 'R727_CL_1118'
-require_relative 'R727_CL_1112'
-require_relative 'R727_CL_1308'
+require_relative 'r727_cl_1118'
+require_relative 'r727_cl_1112'
+require_relative 'r727_cl_1308'
 
 # BMS FRACTION
 require_relative 'ca018001'
@@ -536,6 +535,7 @@ class DT_Transfers
            exit -1
         end
       end
+
 #     begin
 #        this_connection.query('CALL load_dts_specimen_inventory_v1_0')
 #      rescue Mysql2::Error => e
@@ -543,8 +543,14 @@ class DT_Transfers
 #        exit -1
 #      end
 
+      this_s3 = @my_connections.s3_connect(this_transfer.client, env)
+
       file_list.each do |my_file|
-        FileUtils.mv(my_file, 'processed')
+        @my_connections.s3_archive_file(this_s3,
+                                        this_transfer.protocol,
+                                        this_transfer.vendor,
+                                        this_transfer.file_type,
+                                        my_file)
       end
     else
       @logger.error 'Incremental data loads not supported yet'

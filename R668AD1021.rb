@@ -119,12 +119,13 @@ class Regeneron_subject
     @processing_lines.each do |outline|
 
       values_clause <<
-          " (#{outline[0].insert_value}"                          + # study_protocol_id    
-          "  #{outline[2].insert_value}"                          + # site_number          
-          "  #{outline[1][-3..-1].insert_value}"                  + # subject_code
-          "  #{outline[1].insert_value}"                          + # subject_external_id
-          ' NULL,'                                               + # gender               
-          ' NULL,'                                               + # initials             
+          " (#{outline[0].insert_value}"                         + # study_protocol_id
+          "  #{outline[2].insert_value}"                         + # site_number
+          "  #{outline[1][-3..-1].insert_value}"                 + # subject_code
+          "  #{outline[1].insert_value}"                         + # subject_external_id
+          ' NULL,'                                               + # randomization_number
+          ' NULL,'                                               + # gender
+          ' NULL,'                                               + # initials
           ' NULL,'                                               + # enrollment_status
           ' NULL,'                                               + # date_of_birth        
           ' NULL,'                                               + # address              
@@ -136,7 +137,9 @@ class Regeneron_subject
           ' NULL,'                                               + # primary_race
           ' NULL,'                                               + # secondary_race
           ' NULL,'                                               + # ethnicity
-          "  '#{vendor}'"                                         + # vendor_code
+          ' NULL,'                                               + # treatment_arm
+          ' NULL,'                                               + # track
+          " '#{vendor}'"                                         + # vendor_code
           " )"
     end
 

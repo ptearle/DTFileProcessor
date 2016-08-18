@@ -1,3 +1,5 @@
+require 'fileutils'
+
 class DB_Config
 
   def initialize (client, client_code, env, host, user, pass, port, database)
@@ -22,6 +24,10 @@ class DB_Config
 end
 
 class DT_Connections
+
+  AWS_REGION    = 'us-east-1'
+  ARC_DIRECTORY = 'processed'
+
   def initialize(logger)
     @logger  = logger
     @systems = Array.new
@@ -95,7 +101,6 @@ class DT_Connections
                               'gss-demo'
                              )
 
-
     @systems << DB_Config.new('gss-uat',
                               'GSS',
                               'TEST',
@@ -128,15 +133,25 @@ class DT_Connections
     raise 'No such envirnoment'
   end
 
-  def s3_connect (client, eny)
+  def s3_connect (client, env)
 
-    s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAIJEJU7CDWIMHWNCQ', 't+T92/PFOSSpzqQ/GvFa3eKTA4qif/zagH27ZZ6U'),
-                               region:     'us-standard')
-    @obj = s3.bucket('cl017-test').object('uploads')
+    @logger.debug "Looking for #{client} #{env} connection"
 
+    Aws.use_bundled_cert!
+
+    @systems.each do |system|
+      if (system.client == client or system.client_code == client) and system.env == env
+        mycreds = Aws::SharedCredentials.new(:profile_name => system.database)
+        return Aws::S3::Bucket.new(system.database, region: AWS_REGION, credentials: mycreds)
+      end
+    end
+
+    raise 'No such envirnoment'
   end
 
-  def s3_upload_file (file_path)
-    @obj.upload_file(file_path, acl:'public-read')
+  def s3_archive_file (mybucket, protocol, vendor, file_type, file_name)
+    s3_key = "#{protocol}/#{vendor}/#{file_type}/#{file_name}"
+    mybucket.object(s3_key).upload_file(file_name)
+    FileUtils.mv file_name, ARC_DIRECTORY
   end
 end
