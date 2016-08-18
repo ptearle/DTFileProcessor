@@ -72,9 +72,7 @@ class CA018001_CTMS
 
     @processing_lines.each do |outline|
 
-      address = outline[10]
-              + ((outline[11].nil?) ? '' : ", #{outline[11]}")
-              + ((outline[12].nil?) ? '' : ", #{outline[12]}")
+      address = outline[10] + ((outline[11].nil?) ? '' : ", #{outline[11]}") + ((outline[12].nil?) ? '' : ", #{outline[12]}")
 
       state   = (outline[14] == 'MA') ? 'Massachusetts' : outline[14]
 
