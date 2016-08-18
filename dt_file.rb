@@ -46,9 +46,18 @@ end
 
 class DT_Transfers
 
-  PROD_DIR = 'C:\SFTP_PROD'
-  TEST_DIR = 'C:\SFTP_TEST'
-  DIR_SEPARATOR = '\\'
+  puts "->#{ENV['OS']}<-"
+
+  if ENV['OS'] =='Windows_NT'
+    PROD_DIR = 'C:\SFTP_PROD'
+    TEST_DIR = 'C:\SFTP_TEST'
+    DIR_SEPARATOR = '\\'
+  else
+    PROD_DIR = '/home/dt_file_processor/production'
+    TEST_DIR = '/home/dt_file_processor/test'
+    DIR_SEPARATOR = '/'
+  end
+
   INSERT_FRAME = 10000
   INSERT_STATEMENTS = {
       :INVENTORY_V1_0 =>
