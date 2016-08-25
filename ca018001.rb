@@ -238,9 +238,15 @@ class CA018001_EDD
 
       # Ignore if ISO Value is "No specimen received"
       # Ignore if Test Status is "Assigned"
-
-      if specline[23].strip == "No specimen received" or specline[22].strip == "Assigned"
-        next
+	  
+	  if specline[22].strip == "Assigned"
+	    next
+	  end
+	  
+	  unless specline[23].nil?
+        if specline[23].strip == "No specimen received" 
+          next
+		end  
       end
 
       @processing_lines.each do |distinct_line|
@@ -275,7 +281,7 @@ class CA018001_EDD
 
     @processing_lines.each do |outline|
 
-      parent_id        = (outline[11] == '')          ? "NULL"   : "'#{outline[8].strip}#{outline[11].strip}'"
+      parent_id        = (outline[11].nil?)           ? "NULL"   : "'#{outline[8].strip}#{outline[11].strip}'"
       is_child         = (parent_id == 'NULL')        ? 'N'      : 'Y'
       specimen_type    = (outline[16][0..2] == 'SCR') ? 'Tissue' : 'Whole Blood'
       receive_datetime = (is_child == 'Y')            ? "NULL"   : "STR_TO_DATE('#{outline[15].strip}',  '%d-%b-%Y %T')"

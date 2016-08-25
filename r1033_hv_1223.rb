@@ -120,7 +120,7 @@ class R727_CL_1112_subject
 
       values_clause <<
           "(#{outline[0].insert_value}"                         + # study_protocol_id
-              " #{outline[1].insert_value}"                         + # site_number
+              " #{outline[2].insert_value}"                         + # site_number
               " #{outline[1][-3..-1].insert_value}"                 + # subject_code
               " #{outline[1].insert_value}"                         + # subject_external_id
               ' NULL,'                                              + # randomization_number

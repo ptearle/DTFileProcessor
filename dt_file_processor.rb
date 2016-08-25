@@ -19,7 +19,7 @@ begin
     logger.error 'Usage: dt_file_processor <vendor location> <protocol> <file type> <env>'
     logger.error 'Where <vendor location> e.g. ICON'
     logger.error '      <protocol> e.g. CA180-001'
-    logger.error '      <file type> is CUMULATIVE or INCREMENTAL'
+    logger.error '      <file type> is SITE or INVENTORY'
     logger.error '      <env> is PROD or TEST'
     exit -1
   end
