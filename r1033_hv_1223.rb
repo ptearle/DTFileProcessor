@@ -1,7 +1,6 @@
 require 'mysql2'
 
-class R1033_HV_1223
-
+class R1033_HV_1223_site
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer initialized"
@@ -22,21 +21,21 @@ class R1033_HV_1223
     lines = 0
     num_distinct_lines = 0
 
-    @inbound_lines.each do |inline|
+    @inbound_lines.each do |specline|
       found = false
       lines += 1
 
       @processing_lines.each do |distinct_line|
 
         # see if we actually need the line in the file ... Site Id already seen, then ignore
-        if inline[2] == distinct_line[2]
+        if specline[2] == distinct_line[2]
           found = true
           break
         end
       end
 
       if !found
-        @processing_lines << inline
+        @processing_lines << specline
         num_distinct_lines += 1
       end
     end
@@ -58,26 +57,26 @@ class R1033_HV_1223
     @processing_lines.each do |outline|
 
       values_clause <<
-          "(#{outline[0].insert_value}"                           + # study_protocol_id
-              " #{outline[2].insert_value}"                           + # site_number
-              " #{outline[3].insert_value}"                           + # site_name
+          " (#{outline[0].insert_value}"                          + # study_protocol_id
+              "  #{outline[2].insert_value}"                          + # site_number
+              "  #{outline[3].insert_value}"                          + # site_name
               ' NULL,'                                                + # site_address
               ' NULL,'                                                + # site_city
               ' NULL,'                                                + # site_state
-              " #{outline[6].insert_value}"                           + # site_country
+              "  #{outline[6].insert_value}"                          + # site_country
               ' NULL,'                                                + # site_postal_code
               ' NULL,'                                                + # site_phone
               ' NULL,'                                                + # site_fax
               ' NULL,'                                                + # site_FPFV
               ' NULL,'                                                + # site_LPLV
               ' NULL,'                                                + # planned_enrollment
-              " #{outline[4].insert_value}"                           + # site_PI
+              "  #{outline[4].insert_value}"                          + # site_PI
               ' NULL,'                                                + # site_PI_email
               ' NULL,'                                                + # site_coordinator
               ' NULL,'                                                + # site_coordinator_email
               "'Activated',"                                          + # site_status
-              " '#{vendor}'"                                          + # vendor_code
-              ')'
+              "  '#{vendor}'"                                         + # vendor_code
+              ' )'
     end
 
     @logger.info "#{self.class.name} writer end"
@@ -85,7 +84,7 @@ class R1033_HV_1223
   end
 end
 
-class R727_CL_1112_subject
+class R1033_HV_1223_subject
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer Initialized"
@@ -148,7 +147,8 @@ class R727_CL_1112_subject
   end
 end
 
-class R727_CL_1112_RGRNinv
+class R1033_HV_1223_RGRNInv
+
 
   SPECIMEN_TYPE = {
       'Whole Blood'         => 'Whole Blood',
@@ -158,21 +158,20 @@ class R727_CL_1112_RGRNinv
   }.freeze
 
   VISIT_MAP = {
-#'Visit 1',
-# 'Visit 2',
-:V3       => 'Visit 3',
-:W4       => 'Visit 4',
-#'Visit 5',
-:V6       => 'Visit 6',
-# 'Visit 7',
-:V8       => 'Visit 8',
-# 'Visit 9',
-:V10      => 'Visit 10',
-# 'Visit 11',
-:V12      => 'Visit 12',
-:V13      => 'Visit 13',
-:VET      => 'Early Termination',
-:VUNSCHED => 'Unscheduled',
+#      :V1          => 'Visit 1',
+#      :V2          => 'Visit 2',
+:V3          => 'Visit 3',
+:V4          => 'Visit 4',
+:V5          => 'Visit 5',
+:V6          => 'Visit 6',
+:V7          => 'Visit 7',
+:V8          => 'Visit 8 - End of Treatment',
+:V9          => 'Visit 9',
+:V10         => 'Visit 10',
+:V11         => 'Visit 11',
+:V12         => 'Visit 12 - End of Study',
+:VET     	   => 'Early Termination',
+:VUNSCHED    => 'Unscheduled',
   }.freeze
 
   def initialize(logger)
@@ -207,21 +206,16 @@ class R727_CL_1112_RGRNinv
 
     @processing_lines.each do |outline|
 
-      if outline[1].nil? and outline[6].nil?
-        outline[1] = 'De-identified'
-        outline[6] = 'De-identified'
-      end
-
       values_clause <<
           "(#{outline[0].insert_value}"                                  + # study_protocol_id
-              " #{outline[1].insert_value}"                              + # site_number
-              " #{outline[6].insert_value}"                              + # subject_code
+              " #{outline[2].insert_value}"                              + # site_number
+              " #{outline[6].insert_value}"                              + # subject_number
               ' NULL,'                                                   + # subject_gender
               ' NULL,'                                                   + # subject_DOB
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"    + # specimen_collect_date
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y %T')," + # specimen_collect_time
               " STR_TO_DATE(#{outline[17].insert_value} '%c/%e/%Y %T')," + # specimen_receive_datetime
-              " #{VISIT_MAP[('V' + outline[7].sub(/#{'-'}/, '_')).to_sym].insert_value}"   + # visit_name
+              " #{VISIT_MAP[('V' + outline[7]).to_sym].insert_value}"    + # visit_name
               " #{outline[9].insert_value}"                              + # specimen_barcode
               " #{outline[4].insert_value}"                              + # specimen_identifier
               " #{SPECIMEN_TYPE[outline[11].strip].insert_value}"        + # specimen_type
@@ -230,7 +224,7 @@ class R727_CL_1112_RGRNinv
               " 'N',"                                                    + # specimen_ischild
               " #{outline[13].insert_value}"                             + # specimen_condition
               " 'In Inventory',"                                         + # specimen_status
-              " #{outline[28].insert_value}"                             + # specimen_comment
+              ' NULL,'                                                   + # specimen_comment
               ' NULL,'                                                   + # shipped_date
               ' NULL,'                                                   + # shipped_location
               ' NULL,'                                                   + # testing_description
@@ -243,44 +237,47 @@ class R727_CL_1112_RGRNinv
   end
 end
 
-class R727_CL_1112_LCRPInv
+class R1033_HV_1223_LCRPInv
 
   SPECIMEN_TYPE = {
-      :S0	  => 'OTHER',
+      :S0	  => 'UNKNOWN',
+      :S2	  => 'Serum',
       :S3   => 'Serum',
       :S4	  => 'Serum',
       :S9   => 'Plasma',
+      :S12	=> 'Plasma',
       :S13	=> 'Plasma',
+      :S15  => 'Urine',
       :S16	=> 'Urine',
-      :S26	=> 'Whole Blood',
+      :S24	=> 'Whole Blood',
       :S31	=> 'Whole Blood',
       :S46	=> 'Whole Blood',
       :S50  => 'Whole Blood',
-      :S160	=> 'Whole Blood',
-      :S383	=> 'Whole Blood',
-      :S384	=> 'Whole Blood',
-      :S406	=> 'Urine',
+      :S160	=> 'Plasma',
+      :S269 => 'Plasma',
+      :S270 => 'Plasma',
+      :S533 => 'Biospy',
+      :S353 => 'Whole Blood',
+      :S370 => 'RNA',
+      :S725	=> 'DNA',
+      :S908	=> 'Whole Blood',
   }.freeze
 
   VISIT_MAP = {
-      :W_2     => 'Visit 1',
-      #    'Visit 2',
-      :W0      => 'Visit 3',
-      :W4      => 'Visit 4',
-      :W8      => 'Visit 5',
-      :W12     => 'Visit 6',
-      :W16     => 'Visit 7',
-      :W24     => 'Visit 8',
-      :W36     => 'Visit 9',
-      :W52     => 'Visit 10',
-      :W64     => 'Visit 11',
-      :W78     => 'Visit 12',
-      :W86     => 'Visit 13',
-      :V99     => 'Unscheduled',
-      :T       => 'Early Termination',
-      :PK      => 'Optional PK',
-      :DNA     => 'Optional DNA',
-      :DEIDER  => 'De-identified',
+      :VISIT1   => 'Visit 1',
+      :VISIT2   => 'Visit 2 - Baseline',
+      :VISIT3   => 'Visit 3',
+      :VISIT4   => 'Visit 4',
+      :VISIT5   => 'Visit 5',
+      :VISIT6   => 'Visit 6',
+      :VISIT7   => 'Visit 7',
+      :VISIT8   => 'Visit 8 - End of Treatment',
+      :VISIT9   => 'Visit 9',
+      :VISIT10  => 'Visit 10',
+      :VISIT11  => 'Visit 11',
+      :EOS      => 'Visit 12 - End of Study',
+      :ET       => 'Early Termination',
+      :RT       => 'Unscheduled',
   }.freeze
 
   def initialize(logger)
@@ -333,10 +330,7 @@ class R727_CL_1112_LCRPInv
       specimen_ext     = (outline[15].length == 1) ? "0#{outline[15]}" : outline[15]
       specimen_barcode = "#{outline[12]}-#{specimen_ext}"
 
-      if outline[2].strip == 'SMART'      or
-          outline[2].strip == 'DR.SMART'   or
-          outline[2].strip == 'Dr.Smart'   or
-          outline[2].strip == 'SMRT602091'
+      if outline[2].strip == 'DR.SMART'
         site_id     = 'De-Identified'
         subject_id  = 'De-Identified'
       else
@@ -357,6 +351,20 @@ class R727_CL_1112_LCRPInv
         testing_desc  = "'#{outline[18].strip} / #{outline[19].strip}',"
       end
 
+      unless outline[10] == 'T'
+        visit_name = " #{VISIT_MAP[outline[10].to_sym]}"
+      else
+        case outline[8]
+          when 'DNA ISOLATION'
+            visit_name = 'DNA Isolation Visit'
+          when 'COLCHICINE'
+            visit_name = 'Colchicine Rescue Visit'
+          when 'TITRATION VISIT'
+            visit_name = 'Allopurinol Titration Visit'
+          else
+        end
+      end
+
       values_clause <<
           " (#{outline[1].insert_value}"                                    + # study_protocol_id
               "  #{site_id.insert_value}"                                   + # site_number
@@ -366,7 +374,7 @@ class R727_CL_1112_LCRPInv
               "  STR_TO_DATE(#{outline[6].insert_value} '%d%b%Y'),"         + # specimen_collect_date
               "  STR_TO_DATE(#{outline[7].insert_value} '%H:%i'),"          + # specimen_collect_time
               "  STR_TO_DATE(#{outline[34].insert_value} '%d%b%Y'),"        + # specimen_receive_datetime
-              "  #{outline[10].insert_value}"                               + # visit_name
+              " #{VISIT_MAP[outline[10].to_sym].insert_value}"              + # visit_name
               "  #{specimen_barcode.insert_value}"                          + # specimen_barcode
               ' NULL,'                                                      + # specimen_identifier
               "  #{specimen_type}"                                          + # specimen_type
