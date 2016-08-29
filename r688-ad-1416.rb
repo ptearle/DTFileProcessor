@@ -240,7 +240,7 @@ class R688_AD_1416_RGRNinv
   end
 end
 
-class R688_AD_1416_LCRPInv
+class R688_AD_1416_PPDLInv
 
   SPECIMEN_TYPE = {
       :S0	  => 'UNKNOWN',
@@ -266,6 +266,34 @@ class R688_AD_1416_LCRPInv
       :S908	=> 'Whole Blood',
   }.freeze
 
+  Early Termination
+  Genomics DNA
+  Genomics RNA
+  Screening
+  TB Screen
+  Unscheduled 1
+  Unscheduled 10
+  Unscheduled 12
+  Unscheduled 13
+  Unscheduled 14
+  Unscheduled 15
+  Unscheduled 2
+  Unscheduled 3
+  Unscheduled 4
+  Unscheduled 5
+  Unscheduled 6
+  UV
+  Visit 10 Week 8
+  Visit 14 Week 12
+  Visit 18 Week 16
+  Visit 19 Week 20
+  Visit 2 Baseline
+  Visit 20 Week 24
+  Visit 21 Week 28
+  Visit 4 Week 2
+  Visit 6 Week 4
+
+
   VISIT_MAP = {
       :V1   => 'Visit 1',
       :V2   => 'Visit 2 - Baseline',
@@ -282,6 +310,22 @@ class R688_AD_1416_LCRPInv
       :ET   => 'Early Termination',
       :RT   => 'Unscheduled',
   }.freeze
+
+  SPECIMEN_STATUS = {
+  Destroyed
+  Discarded
+  In Lab
+  In Storage
+  Lab Discard
+  Pulled For Lab
+  Received
+  Residual Storage
+  Routed
+  Shipped Clinical Site
+  Shipped Missing Sample
+  Shipped Regeneron Pharmaceuticals, Inc - Tarrytown
+  }.freeze
+
 
   def initialize(logger)
     @logger = logger
