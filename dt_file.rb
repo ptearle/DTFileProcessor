@@ -1,5 +1,8 @@
 require 'aws-sdk'
 
+# DT Support functions
+require_relative 'dt_config'
+
 # Regeneron
 require_relative 'regeneron'
 require_relative 'r1033_hv_1204'
@@ -15,21 +18,6 @@ require_relative 'r668_ad_1314'
 
 # BMS FRACTION
 require_relative 'ca018001'
-
-# DT Support functions
-require_relative 'dt_config'
-
-class String
-  def insert_value
-    "  #{'\''+self.strip.gsub(/'/,  '\'\'') +'\''},"
-  end
-end
-
-class NilClass
-  def insert_value
-    'NULL,'
-  end
-end
 
 class DT_File
 
@@ -725,7 +713,7 @@ class DT_Transfers
 
       @logger.info("#{num_in} read in")
 
-      if (num_to_process = this_transfer.filer.processor(this_connection, this_s3)) == 0
+      if (num_to_process = this_transfer.filer.processor(this_connection)) == 0
         @logger.info 'No records to process'
       end
 

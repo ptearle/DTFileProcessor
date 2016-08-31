@@ -1,5 +1,17 @@
 require 'fileutils'
 
+class String
+  def insert_value
+    "  #{'\''+self.strip.gsub(/'/,  '\'\'') +'\''},"
+  end
+end
+
+class NilClass
+  def insert_value
+    'NULL,'
+  end
+end
+
 class DB_Config
 
   def initialize (client, client_code, env, host, user, pass, port, database)
@@ -149,9 +161,14 @@ class DT_Connections
     raise 'No such envirnoment'
   end
 
-  def s3_archive_file (mybucket, protocol, vendor, file_type, file_name)
+  def s3_archive_file (mybucket, protocol, vendor, file_type, file_name, acl = nil)
     s3_key = "#{protocol}/#{vendor}/#{file_type}/#{file_name}"
-    mybucket.object(s3_key).upload_file(file_name)
+    if acl.nil?
+       mybucket.object(s3_key).upload_file(file_name)
+    else
+       mybucket.object(s3_key).upload_file(file_name, acl: acl)
+    end
+
     FileUtils.mv file_name, ARC_DIRECTORY
   end
 end
