@@ -1,6 +1,6 @@
 require 'mysql2'
 
-class R688_AD_1416_site
+class R2176_3_AMD_1303_site
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer initialized"
@@ -84,7 +84,7 @@ class R688_AD_1416_site
   end
 end
 
-class R688_AD_1416_subject
+class R2176_3_AMD_1303_subject
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer Initialized"
@@ -147,35 +147,31 @@ class R688_AD_1416_subject
   end
 end
 
-class R688_AD_1416_RGRNInv
+class R2176_3_AMD_1303_RGRNInv
 
   SPECIMEN_TYPE = {
-      'Hu Whole Blood'         => 'Plasma',
-      'Hu Plasma (EDTA)'       => 'Plasma',
-      'Hu Serum'               => 'Serum',
+      'DNA Extract'         => 'DAN',
+      'Hu Plasma (CTAD)'    => 'Plasma',
+      'Hu Serum'            => 'Serum',
   }.freeze
 
   VISIT_MAP = {
       :V1          => 'Visit 1',
       :V2          => 'Visit 2 - Baseline',
-#      :V3          => 'Visit 3',
+      :V3          => 'Visit 3',
       :V4          => 'Visit 4',
-#      :V5          => 'Visit 5',
+      :V5          => 'Visit 5',
       :V6          => 'Visit 6',
-#      :V7          => 'Visit 7',
-#      :V8          => 'Visit 8',
-#      :V9          => 'Visit 9',
+      :V7          => 'Visit 7',
+      :V8          => 'Visit 8',
+      :V9          => 'Visit 9',
       :V10         => 'Visit 10',
-#      :V11         => 'Visit 11',
+      :V11         => 'Visit 11',
       :V14         => 'Visit 14',
-      :V18         => 'Visit 18',
-      :V19         => 'Visit 19',
-      :V20         => 'Visit 20',
-      :V21         => 'Visit 21 - End of Study',
+      :V15         => 'Visit 15',
       :VET     	   => 'Early Termination',
       :VUNSCHED    => 'Unscheduled',
   }.freeze
-
 
   def initialize(logger)
     @logger = logger
@@ -209,10 +205,19 @@ class R688_AD_1416_RGRNInv
 
     @processing_lines.each do |outline|
 
+      if outline[1].nil?
+        site_id     = 'De-Identified'
+        subject_id  = 'De-Identified'
+      else
+        site_id     = outline[1]
+        subject_id  = outline[6]
+      end
+
+
       values_clause <<
           "(#{outline[0].insert_value}"                                  + # study_protocol_id
-              " #{outline[2].insert_value}"                              + # site_number
-              " #{outline[6].insert_value}"                              + # subject_number
+              " #{site_id.insert_value}"                                 + # site_number
+              " #{subject_id.insert_value}"                              + # subject_number
               ' NULL,'                                                   + # subject_gender
               ' NULL,'                                                   + # subject_DOB
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"    + # specimen_collect_date
@@ -240,7 +245,7 @@ class R688_AD_1416_RGRNInv
   end
 end
 
-class R688_AD_1416_PPDLInv
+class R2176_3_AMD_1303_LCRPInv
 
   SPECIMEN_TYPE = {
       :S0	  => 'UNKNOWN',
@@ -257,6 +262,7 @@ class R688_AD_1416_PPDLInv
       :S46	=> 'Whole Blood',
       :S50  => 'Whole Blood',
       :S160	=> 'Plasma',
+      :S164 => 'Urine',
       :S269 => 'Plasma',
       :S270 => 'Plasma',
       :S533 => 'Biospy',
@@ -264,23 +270,29 @@ class R688_AD_1416_PPDLInv
       :S370 => 'RNA',
       :S725	=> 'DNA',
       :S908	=> 'Whole Blood',
+      :S947 => 'Plasma',
   }.freeze
 
   VISIT_MAP = {
-      :V1   => 'Visit 1',
-      :V2   => 'Visit 2 - Baseline',
-      :V3   => 'Visit 3',
-      :V4   => 'Visit 4',
-      :V5   => 'Visit 5',
-      :V6   => 'Visit 6',
-      :V7   => 'Visit 7',
-      :V8   => 'Visit 8 - End of Treatment',
-      :V9   => 'Visit 9',
-      :V10  => 'Visit 10',
-      :V11  => 'Visit 11',
-      :EOS  => 'EOS/ET Visit 12 - End of Study',
-      :ET   => 'Early Termination',
-      :RT   => 'Unscheduled',
+      :V1      => 'Visit 1',
+      :V2      => 'Visit 2 - Baseline',
+      :V3      => 'Visit 3',
+      :V4      => 'Visit 4',
+      :V5      => 'Visit 5',
+      :V6      => 'Visit 6',
+      :V7      => 'Visit 7',
+      :V8      => 'Visit 8',
+      :V9      => 'Visit 9',
+      :V10     => 'Visit 10',
+      :V11     => 'Visit 11',
+      :V12     => 'Visit 12',
+      :V13     => 'Visit 13',
+      :V14     => 'Visit 14',
+      :V15     => 'Visit 15',
+      :EOS     => 'Visit 15',
+      :ET      => 'Early Termination',
+      :T       => 'DNA Isolation Visit',
+      :UNSCHED => 'Unscheduled',
   }.freeze
 
   def initialize(logger)
@@ -333,7 +345,7 @@ class R688_AD_1416_PPDLInv
       specimen_ext     = (outline[15].length == 1) ? "0#{outline[15]}" : outline[15]
       specimen_barcode = "#{outline[12]}-#{specimen_ext}"
 
-      if outline[2].strip == '999'
+      if outline[2].strip == 'DR.SMART'
         site_id     = 'De-Identified'
         subject_id  = 'De-Identified'
       else
@@ -354,20 +366,6 @@ class R688_AD_1416_PPDLInv
         testing_desc  = "'#{outline[18].strip} / #{outline[19].strip}',"
       end
 
-      unless outline[10] == 'T'
-        visit_name = " #{VISIT_MAP[outline[10].to_sym]}"
-      else
-        case outline[8]
-          when 'DNA ISOLATION'
-            visit_name = 'DNA Isolation Visit'
-          when 'COLCHICINE'
-            visit_name = 'Colchicine Rescue Visit'
-          when 'TITRATION VISIT'
-            visit_name = 'Allopurinol Titration Visit'
-          else
-        end
-      end
-
       values_clause <<
           " (#{outline[1].insert_value}"                                    + # study_protocol_id
               "  #{site_id.insert_value}"                                   + # site_number
@@ -377,7 +375,7 @@ class R688_AD_1416_PPDLInv
               "  STR_TO_DATE(#{outline[6].insert_value} '%d%b%Y'),"         + # specimen_collect_date
               "  STR_TO_DATE(#{outline[7].insert_value} '%H:%i'),"          + # specimen_collect_time
               "  STR_TO_DATE(#{outline[34].insert_value} '%d%b%Y'),"        + # specimen_receive_datetime
-              "  #{visit_name.insert_value}"                                + # visit_name
+              " #{VISIT_MAP[outline[10].to_sym].insert_value}"              + # visit_name
               "  #{specimen_barcode.insert_value}"                          + # specimen_barcode
               ' NULL,'                                                      + # specimen_identifier
               "  #{specimen_type}"                                          + # specimen_type

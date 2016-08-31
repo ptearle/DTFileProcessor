@@ -10,6 +10,8 @@ require_relative 'r1033_src_1239'
 require_relative 'il1t-ga-1101'
 require_relative 'r688-ad-1416'
 require_relative 'r1033_hv_1223'
+require_relative 'r2176_3_amd_1303'
+require_relative 'r668_ad_1314'
 
 # BMS FRACTION
 require_relative 'ca018001'
@@ -544,13 +546,13 @@ class DT_Transfers
                               'CUMULATIVE',
                               R688_AD_1416_subject.new(logger),
                               logger)
-    @transfers << DT_File.new('RGRN',
+    @transfers << DT_File.new('PPDL',
                               'Regeneron',
                               'R688-AD-1416',
                               'INVENTORY',
                               'V1_0',
                               'CUMULATIVE',
-                              R688_AD_1416_RGRNinv.new(logger),
+                              R688_AD_1416_RGRNInv.new(logger),
                               logger)
     @transfers << DT_File.new('LCRP',
                               'Regeneron',
@@ -558,7 +560,7 @@ class DT_Transfers
                               'INVENTORY',
                               'V1_0',
                               'CUMULATIVE',
-                              R688_AD_1416_LCRPInv.new(logger),
+                              R688_AD_1416_PPDLInv.new(logger),
                               logger)
     @transfers << DT_File.new('RGRN',
                               'Regeneron',
@@ -591,6 +593,70 @@ class DT_Transfers
                               'V1_0',
                               'CUMULATIVE',
                               R1033_HV_1223_LCRPInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2176-3-AMD-1303',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2176_3_AMD_1303_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2176-3-AMD-1303',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2176_3_AMD_1303_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2176-3-AMD-1303',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2176_3_AMD_1303_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R2176-3-AMD-1303',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2176_3_AMD_1303_LCRPInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1314',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1314_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1314',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1314_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1314',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1314_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1314',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1314_LCRPInv.new(logger),
                               logger)
 
     @my_connections = DT_Connections.new(logger)
@@ -642,6 +708,13 @@ class DT_Transfers
       exit -1
     end
 
+    begin
+      this_s3 = @my_connections.s3_connect(this_transfer.client, env)
+    rescue Exception => e
+      @logger.error "S3 Connection failure - #{e.message}"
+      exit -1
+    end
+
     if this_transfer.mode == 'CUMULATIVE'
       @logger.info("Processing #{file_list.last} in "+Dir.pwd+".")
 
@@ -652,7 +725,7 @@ class DT_Transfers
 
       @logger.info("#{num_in} read in")
 
-      if (num_to_process = this_transfer.filer.processor(this_connection)) == 0
+      if (num_to_process = this_transfer.filer.processor(this_connection, this_s3)) == 0
         @logger.info 'No records to process'
       end
 
@@ -685,8 +758,6 @@ class DT_Transfers
 #        @logger.error "DB Load Execution failure - #{e.message}"
 #        exit -1
 #      end
-
-      this_s3 = @my_connections.s3_connect(this_transfer.client, env)
 
       file_list.each do |my_file|
         @my_connections.s3_archive_file(this_s3,
