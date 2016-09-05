@@ -7,7 +7,7 @@ require 'aws-sdk'
 #require_relative 'dt_config'
 require_relative 'dt_file'
 
-logger          = Logger.new('dt_file_processor.log', shift_age = 'daily')
+logger          = Logger.new("dt_file_processor-#{ARGV[3]}.log", shift_age = 'daily')
 logger.level    = Logger::INFO
 logger.progname = 'dt_file_processor'
 
