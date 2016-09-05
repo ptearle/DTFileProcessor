@@ -15,6 +15,7 @@ require_relative 'r688-ad-1416'
 require_relative 'r1033_hv_1223'
 require_relative 'r2176_3_amd_1303'
 require_relative 'r668_ad_1314'
+require_relative 'r1500-cl-1321'
 
 # BMS FRACTION
 require_relative 'ca018001'
@@ -645,6 +646,38 @@ class DT_Transfers
                               'V1_0',
                               'CUMULATIVE',
                               R668_AD_1314_LCRPInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1500-CL-1321',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_CL_1321_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1500-CL-1321',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_CL_1321_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1500-CL-1321',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_CL_1321_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('MDPC',
+                              'Regeneron',
+                              'R1500-CL-1321',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_CL_1321_MDPCInv.new(logger),
                               logger)
 
     @my_connections = DT_Connections.new(logger)

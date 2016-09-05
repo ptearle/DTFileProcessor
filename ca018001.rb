@@ -146,14 +146,14 @@ class CA018001_ivrt
       case outline[3]
         when 'Screening'
           values_clause <<
-              " ('CA018-001',"                                           + # study_protocol_id
+              " ('CA018-001',"                                          + # study_protocol_id
                   " #{outline[1].rjust(4, '0').insert_value}"           + # site_number
                   " #{outline[0].rjust(5, '0').insert_value}"           + # subject_code
-                  " #{external_id.insert_value}"                                     + # subject_external_id
+                  " #{external_id.insert_value}"                        + # subject_external_id
                   ' NULL,'                                              + # randomization number
                   ' NULL,'                                              + # gender
                   ' NULL,'                                              + # initials
-                  "'Screening',"                                       + # enrollment_status
+                  "'Screening',"                                        + # enrollment_status
                   ' NULL,'                                              + # date_of_birth
                   ' NULL,'                                              + # address
                   ' NULL,'                                              + # city
@@ -188,7 +188,7 @@ class CA018001_ivrt
                   " #{outline[6].insert_value}"                         + # randomization number
                   ' NULL,'                                              + # gender
                   ' NULL,'                                              + # initials
-                  "'Randomized',"                                      + # enrollment_status
+                  "'Randomized',"                                       + # enrollment_status
                   ' NULL,'                                              + # date_of_birth
                   ' NULL,'                                              + # address
                   ' NULL,'                                              + # city
