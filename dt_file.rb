@@ -809,7 +809,7 @@ class DT_Transfers
                               'CUMULATIVE',
                               R668_AD_1334_RGRNInv.new(logger),
                               logger)
-    @transfers << DT_File.new('LCRP',
+    @transfers << DT_File.new('PPDL',
                               'Regeneron',
                               'R668-AD-1334',
                               'INVENTORY',

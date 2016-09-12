@@ -298,9 +298,9 @@ class CA018001_EDD
                        "  STR_TO_DATE('#{outline[5].strip}',  '%d-%b-%Y'),"       + # subject_DOB
                        "  STR_TO_DATE('#{outline[7].strip}',  '%d-%b-%Y'),"       + # specimen_collect_date
                        "  STR_TO_DATE('#{outline[7].strip}',  '%d-%b-%Y %T'),"    + # specimen_collect_time
+                       "  #{receive_datetime},"                                   + # specimen_receive_datetime
                        ' NULL,'                                                   + # treatment
                        ' NULL,'                                                   + # arm
-                       "  #{receive_datetime},"                                   + # specimen_receive_datetime
                        "  '#{outline[16].strip}',"                                + # visit_name
                        "  '#{outline[8].strip}#{outline[9].strip}',"              + # specimen_barcode
                        '  NULL,'                                                  + # specimen_identifier
