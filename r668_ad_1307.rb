@@ -1,6 +1,6 @@
 require 'mysql2'
 
-class R668_AD_1416_site
+class R668_AD_1307_site
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer initialized"
@@ -57,9 +57,9 @@ class R668_AD_1416_site
     @processing_lines.each do |outline|
 
       values_clause <<
-          " (#{outline[0].insert_value}"                              + # study_protocol_id
-              " #{outline[1][0..5].insert_value}"                     + # site_number
-              " #{outline[3].insert_value}"                           + # site_name
+          " (#{outline[0].insert_value}"                          + # study_protocol_id
+              "  #{outline[2].insert_value}"                          + # site_number
+              "  #{outline[3].insert_value}"                          + # site_name
               ' NULL,'                                                + # site_address
               ' NULL,'                                                + # site_city
               ' NULL,'                                                + # site_state
@@ -84,7 +84,13 @@ class R668_AD_1416_site
   end
 end
 
-class R668_AD_1416_subject
+class R668_AD_1307_subject
+
+  ARM = {
+      :DUPILUMAB200MGQW  => 'Dupilumab - 200mg',
+      :PLACEBOQW         => 'Placebo ',
+  }.freeze
+
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer Initialized"
@@ -117,9 +123,13 @@ class R668_AD_1416_subject
 
     @processing_lines.each do |outline|
 
+      subject_arm         = (outline[9].nil?) ? ' NULL,'  : " #{ARM[outline[9].gsub(/[^a-zA-Z0-9]/, '').to_sym].insert_value}"
+      icf_signing_date    = (outline[7].nil?)  ? ' NULL,' : "  STR_TO_DATE(#{outline[7].insert_value} '%Y-%m-%d'),"
+      icf_withdrawl_date  = (outline[10].nil?) ? ' NULL,' : "  STR_TO_DATE(#{outline[10].insert_value} '%Y-%m-%d'),"
+
       values_clause <<
           "(#{outline[0].insert_value}"                         + # study_protocol_id
-              " #{outline[1][0..5].insert_value}"                   + # site_number
+              " #{outline[2].insert_value}"                         + # site_number
               " #{outline[1][-3..-1].insert_value}"                 + # subject_code
               " #{outline[1].insert_value}"                         + # subject_external_id
               ' NULL,'                                              + # randomization_number
@@ -136,8 +146,10 @@ class R668_AD_1416_subject
               ' NULL,'                                              + # primary_race
               ' NULL,'                                              + # secondary_race
               ' NULL,'                                              + # ethnicity
-              ' NULL,'                                              + # treatment_arm
-              ' NULL,'                                              + # track
+              " 'Dupilumab',"                                       + # treatment
+              "  #{subject_arm}"                                    + # arm
+              "  #{icf_signing_date}"                               + # ICF_signing_date
+              "  #{icf_withdrawl_date}"                             + # ICF withdrawl_date
               " '#{vendor}'"                                        + # vendor_code
               ")"
     end
@@ -147,33 +159,42 @@ class R668_AD_1416_subject
   end
 end
 
-class R668_AD_1416_RGRNInv
+class R668_AD_1307_RGRNInv
 
   SPECIMEN_TYPE = {
-      'Hu Whole Blood'         => 'Whole Blood',
-      'Hu Plasma (EDTA)'       => 'Plasma',
-      'Hu Serum'               => 'Serum',
+      'HU Whole Blood'      => 'Whole Blood',
+      'Hu Plasma (EDTA)'    => 'Plasma',
+      'Hu Serum'            => 'Serum',
   }.freeze
 
   VISIT_MAP = {
       :V1          => 'Visit 1',
-      :V2          => 'Visit 2 - Baseline',
-      #      :V3          => 'Visit 3',
+      :V2          => 'Visit 2',
+      :V3          => 'Visit 3',
       :V4          => 'Visit 4',
-      #      :V5          => 'Visit 5',
+      :V5          => 'Visit 5',
       :V6          => 'Visit 6',
-      #      :V7          => 'Visit 7',
-      #      :V8          => 'Visit 8',
-      #      :V9          => 'Visit 9',
+      :V7          => 'Visit 7',
+      :V8          => 'Visit 8',
+      :V9          => 'Visit 9',
       :V10         => 'Visit 10',
-      #      :V11         => 'Visit 11',
+      :V11         => 'Visit 11',
       :V14         => 'Visit 14',
+      :V15         => 'Visit 15',
+      :V16         => 'Visit 16',
+      :V17         => 'Visit 17',
       :V18         => 'Visit 18',
       :V19         => 'Visit 19',
       :V20         => 'Visit 20',
-      :V21         => 'Visit 21 - End of Study',
+      :V21         => 'Visit 21',
+      :V22         => 'Visit 22',
+      :V23         => 'Visit 23',
+      :V24         => 'Visit 24',
+      :V25         => 'Visit 25',
+      :V26         => 'Visit 26',
       :VET     	   => 'Early Termination',
       :VUNSCHED    => 'Unscheduled',
+      :VMON        => 'Unscheduled',
   }.freeze
 
   def initialize(logger)
@@ -208,17 +229,26 @@ class R668_AD_1416_RGRNInv
 
     @processing_lines.each do |outline|
 
+      if outline[1].nil?
+        site_id     = 'De-Identified'
+        subject_id  = 'De-Identified'
+      else
+        site_id     = outline[1]
+        subject_id  = outline[6]
+      end
+
+
       values_clause <<
           "(#{outline[0].insert_value}"                                  + # study_protocol_id
-              " #{outline[1].insert_value}"                              + # site_number
-              " #{outline[6].insert_value}"                              + # subject_number
+              " #{site_id.insert_value}"                                 + # site_number
+              " #{subject_id.insert_value}"                              + # subject_number
               ' NULL,'                                                   + # subject_gender
               ' NULL,'                                                   + # subject_DOB
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"    + # specimen_collect_date
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y %T')," + # specimen_collect_time
               " STR_TO_DATE(#{outline[17].insert_value} '%c/%e/%Y %T')," + # specimen_receive_datetime
               " #{VISIT_MAP[('V' + outline[7]).to_sym].insert_value}"    + # visit_name
-              " #{outline[3].insert_value}"                              + # specimen_barcode
+              " #{outline[9].insert_value}"                              + # specimen_barcode
               " #{outline[4].insert_value}"                              + # specimen_identifier
               " #{SPECIMEN_TYPE[outline[11].strip].insert_value}"        + # specimen_type
               " #{outline[10].insert_value}"                             + # specimen_name
@@ -239,67 +269,70 @@ class R668_AD_1416_RGRNInv
   end
 end
 
-class R668_AD_1416_PPDLInv
+class R668_AD_1307_LCRPInv
 
   SPECIMEN_TYPE = {
-      'Whole Blood (EDTA)'  => 'Whole Blood',
-      'Plasma (EDTA)'       => 'Plasma',
-      'Serum'               => 'Serum',
-  }.freeze
-
-  SPECIMEN_STATUS = {
-      :Destroyed                                    => 'Destroyed',
-      :Discarded                                    => 'Destroyed',
-      :InLab                                        => 'In Inventory',
-      :InStorage                                    => 'In Storage',
-      :LabDiscard                                   => 'Destroyed',
-      :PulledForLab                                 => 'In Inventory',
-      :Received                                     => 'In Inventory',
-      :ResidualStorage                              => 'In Storage',
-      :Routed                                       => 'In Transit',
-      :ShippedClinicalSite                          => 'In Transit',
-      :ShippedMissingSample                         => 'In Transit',
-      :ShippedRegeneronPharmaceuticalsIncTarrytown  => 'In Transit',
+      :S0	  => 'UNKNOWN',
+      :S2	  => 'Serum',
+      :S3   => 'Serum',
+      :S4	  => 'Serum',
+      :S9   => 'Plasma',
+      :S12	=> 'Plasma',
+      :S13	=> 'Plasma',
+      :S15  => 'Urine',
+      :S16	=> 'Urine',
+      :S24	=> 'Whole Blood',
+      :S31	=> 'Whole Blood',
+      :S46	=> 'Whole Blood',
+      :S50  => 'Whole Blood',
+      :S160	=> 'Plasma',
+      :S164 => 'Urine',
+      :S269 => 'Plasma',
+      :S270 => 'Plasma',
+      :S533 => 'Biospy',
+      :S353 => 'Whole Blood',
+      :S370 => 'RNA',
+      :S725	=> 'DNA',
+      :S875 => 'Tissue',
+      :S877 => 'Swab',
+      :S908	=> 'Whole Blood',
+      :S955 => 'Tissue',
+      :S947 => 'Plasma',
   }.freeze
 
   VISIT_MAP = {
-      :Screening        => 'Visit 1',
-      :GenomicsDNA      => 'Visit 1',
-      :GenomicsRNA      => 'Visit 1',
-      :TBScreen         => 'Visit 1',
-      :Visit2Baseline   => 'Visit 2 - Baseline',
-      #      :V3          => 'Visit 3',
-      :Visit4Week2      => 'Visit 4',
-      #      :V5          => 'Visit 5',
-      :Visit6Week4      => 'Visit 6',
-      #      :V7          => 'Visit 7',
-      #      :V8          => 'Visit 8',
-      #      :V9          => 'Visit 9',
-      :Visit10Week8     => 'Visit 10',
-      #      :V11         => 'Visit 11',
-      #      :V12         => 'Visit 12',
-      #      :V13         => 'Visit 13',
-      :Visit14Week12    => 'Visit 14',
-      #      :V15         => 'Visit 15',
-      #      :V16         => 'Visit 16',
-      #      :V17         => 'Visit 17',
-      :Visit18Week16    => 'Visit 18',
-      :Visit19Week20    => 'Visit 19',
-      :Visit20Week24    => 'Visit 20',
-      :Visit21Week28    => 'Visit 21 - End of Study',
-      :EarlyTermination => 'Early Termination',
-      :UV               => 'Unscheduled',
-      :Unscheduled1     => 'Unscheduled',
-      :Unscheduled2     => 'Unscheduled',
-      :Unscheduled3     => 'Unscheduled',
-      :Unscheduled4     => 'Unscheduled',
-      :Unscheduled5     => 'Unscheduled',
-      :Unscheduled6     => 'Unscheduled',
-      :Unscheduled10    => 'Unscheduled',
-      :Unscheduled12    => 'Unscheduled',
-      :Unscheduled13    => 'Unscheduled',
-      :Unscheduled14    => 'Unscheduled',
-      :Unscheduled15    => 'Unscheduled',
+      :V1      => 'Visit 1',
+      :VISIT1  => 'Visit 1',
+      :V2      => 'Visit 2',
+      :VISITI2 => 'Visit 2',
+      :V3      => 'Visit 3',
+      :V4      => 'Visit 4',
+      :VISIT4  => 'Visit 4',
+      :V5      => 'Visit 5',
+      :V6      => 'Visit 6',
+      :VISIT6  => 'Visit 6',
+      :V7      => 'Visit 7',
+      :V8      => 'Visit 8',
+      :V9      => 'Visit 9',
+      :V10     => 'Visit 10',
+      :VISIT10 => 'Visit 10',
+      :V11     => 'Visit 11',
+      :V12     => 'Visit 12',
+      :V13     => 'Visit 13',
+      :V14     => 'Visit 14',
+      :VISIT14 => 'Visit 14',
+      :V15     => 'Visit 15',
+      :V16     => 'Visit 16',
+      :V17     => 'Visit 17',
+      :V18     => 'Visit 18',
+      :VISIT18 => 'Visit 18',
+      :V19     => 'Visit 19',
+      :V20     => 'Visit 20',
+      :V21     => 'Visit 21',
+      :V22     => 'Visit 22',
+      :ET      => 'Early Termination',
+      :DNA     => 'DNA ',
+      :RT      => 'Unscheduled',
   }.freeze
 
   def initialize(logger)
@@ -310,14 +343,30 @@ class R668_AD_1416_PPDLInv
   def reader(inbound_file)
     @logger.debug "File name is ->#{inbound_file}<-"
     @logger.info "#{self.class.name} reader start"
-    @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
+    @inbound_lines = CSV.read(inbound_file, col_sep: '|', headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
     @logger.info "#{self.class.name} reader end"
     @inbound_lines.length
   end
 
   def processor(this_connection)
     @logger.info "#{self.class.name} processor start'"
-    @processing_lines = @inbound_lines
+
+    @processing_lines = Array.new
+    lines = 0
+    num_distinct_lines = 0
+
+    @inbound_lines.each do |specline|
+      found = false
+      lines += 1
+
+      # If the specimen number is zero or there is no receive date, ignore
+      if specline[15] == '0' or specline[34].nil?
+        next
+      end
+
+      @processing_lines << specline
+    end
+
     @logger.info "#{self.class.name} processor end"
     @processing_lines.length
   end
@@ -326,7 +375,7 @@ class R668_AD_1416_PPDLInv
     @logger.info "#{self.class.name} writer start"
 
     if @processing_lines.count == 0
-      @logger.info ("Nothing to insert :(")
+      logger.info ("Nothing to insert :(")
       exit 0
     end
 
@@ -334,19 +383,30 @@ class R668_AD_1416_PPDLInv
 
     @processing_lines.each do |outline|
 
-      if outline[2].strip == '999'
+      specimen_ext     = (outline[15].length == 1) ? "0#{outline[15]}" : outline[15]
+      specimen_barcode = "#{outline[12]}-#{specimen_ext}"
+
+      if outline[2].strip == 'DRSMART'
         site_id     = 'De-Identified'
         subject_id  = 'De-Identified'
       else
-        site_id     =   outline[5].rjust(6, '0')
-        subject_id  =  (outline[6].nil?)   ? ' NULL,' : outline[6][-3..-1]
+        site_id     = outline[2].rjust(6, '0')
+        subject_id  = outline[3][-3..-1]
       end
 
-      shipped_date    = (outline[11].nil?) ? ' NULL,' : "  STR_TO_DATE(#{outline[11].insert_value} '%d%b%Y'),"
-      specimen_type   = (outline[15].nil?) ? ' NULL,' : " #{SPECIMEN_TYPE[outline[15]].insert_value}"
-      specimen_status = (outline[18].nil?) ? ' NULL,' : " #{SPECIMEN_STATUS[outline[18].gsub(/[^a-zA-Z]/, '').to_sym].insert_value}"
+      shipped_date    = (outline[35].nil?) ? ' NULL,' : "  STR_TO_DATE(#{outline[35].insert_value} '%d%b%Y'),"
+      specimen_type   = (outline[23].nil?) ? ' NULL,' : " #{SPECIMEN_TYPE[('S' + outline[23]).to_sym].insert_value}"
+      specimen_status = (outline[33].nil?) ? "'In Inventory'," : "'In Transit',"
 
-      visit_name = " #{VISIT_MAP[outline[8].gsub(/\s+/, '').to_sym].insert_value}"
+      if outline[18].nil? and outline[19].nil?
+        testing_desc  = ' NULL,'
+      elsif outline[19].nil?
+        testing_desc  = "'#{outline[18].strip}',"
+      elsif outline[18].nil?
+        testing_desc  = "'#{outline[19].strip}',"
+      else
+        testing_desc  = "'#{outline[18].strip} / #{outline[19].strip}',"
+      end
 
       values_clause <<
           " (#{outline[1].insert_value}"                                    + # study_protocol_id
@@ -354,22 +414,22 @@ class R668_AD_1416_PPDLInv
               "  #{subject_id.insert_value}"                                + # subject_code
               ' NULL,'                                                      + # subject_gender
               ' NULL,'                                                      + # subject_DOB
-              "  STR_TO_DATE(#{outline[9].insert_value} '%d-%b-%Y'),"       + # specimen_collect_date
-              ' NULL,'                                                      + # specimen_collect_time
-              "  STR_TO_DATE(#{outline[10].insert_value} '%d-%b-%Y'),"      + # specimen_receive_datetime
-              "  #{visit_name}"                                             + # visit_name
-              "  #{outline[12].insert_value}"                               + # specimen_barcode
-              "  #{outline[13].insert_value}"                               + # specimen_identifier
+              "  STR_TO_DATE(#{outline[6].insert_value} '%d%b%Y'),"         + # specimen_collect_date
+              "  STR_TO_DATE(#{outline[7].insert_value} '%H:%i'),"          + # specimen_collect_time
+              "  STR_TO_DATE(#{outline[34].insert_value} '%d%b%Y'),"        + # specimen_receive_datetime
+              " #{VISIT_MAP[outline[10].to_sym].insert_value}"              + # visit_name
+              "  #{specimen_barcode.insert_value}"                          + # specimen_barcode
+              ' NULL,'                                                      + # specimen_identifier
               "  #{specimen_type}"                                          + # specimen_type
-              "  #{outline[14].insert_value}"                               + # specimen_name
+              "  #{outline[24].insert_value}"                               + # specimen_name
               ' NULL,'                                                      + # specimen_parent
               "  'N',"                                                      + # specimen_ischild
-              "  #{outline[17].insert_value}"                               + # specimen_condition
+              "  #{outline[26].insert_value}"                               + # specimen_condition
               "  #{specimen_status}"                                        + # specimen_status
-              "  #{outline[19].insert_value}"                               + # specimen_comment
+              "  #{outline[28].insert_value}"                               + # specimen_comment
               "  #{shipped_date}"                                           + # shipped_date
-              ' NULL,'                                                      + # shipped_location
-              ' NULL,'                                                      + # testing_description
+              "  #{outline[40].insert_value}"                               + # shipped_location
+              "  #{testing_desc}"                                           + # testing_description
               "  '#{vendor}'"                                               + # vendor_code
               " )"
     end

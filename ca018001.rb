@@ -164,8 +164,9 @@ class CA018001_ivrt
                   ' NULL,'                                              + # primary_race
                   ' NULL,'                                              + # secondary_race
                   ' NULL,'                                              + # ethnicity
-                  ' NULL,'                                              + # treatment_arm
-                  ' NULL,'                                              + # track
+                  ' NULL,'                                              + # treatment
+                  ' NULL,'                                              + # arm
+                  ' NULL,'                                              + # ICF_signing_date ' NULL,'                                              + # ICF withdrawl_date
                   " '#{vendor}'"                                        + # vendor_code
                   ")"
         when 'Randomization'
@@ -199,8 +200,10 @@ class CA018001_ivrt
                   ' NULL,'                                              + # primary_race
                   ' NULL,'                                              + # secondary_race
                   ' NULL,'                                              + # ethnicity
-                  " #{treatment_arm.insert_value}"                      + # treatment_arm
-                  " #{outline[7].insert_value}"                         + # track
+                  " #{treatment_arm.insert_value}"                      + # treatment
+                  " #{outline[7].insert_value}"                         + # arm
+                  ' NULL,'                                              + # ICF_signing_date
+                  ' NULL,'                                              + # ICF withdrawl_date
                   " '#{vendor}'"                                        + # vendor_code
                   ")"
 
@@ -295,6 +298,8 @@ class CA018001_EDD
                        "  STR_TO_DATE('#{outline[5].strip}',  '%d-%b-%Y'),"       + # subject_DOB
                        "  STR_TO_DATE('#{outline[7].strip}',  '%d-%b-%Y'),"       + # specimen_collect_date
                        "  STR_TO_DATE('#{outline[7].strip}',  '%d-%b-%Y %T'),"    + # specimen_collect_time
+                       ' NULL,'                                                   + # treatment
+                       ' NULL,'                                                   + # arm
                        "  #{receive_datetime},"                                   + # specimen_receive_datetime
                        "  '#{outline[16].strip}',"                                + # visit_name
                        "  '#{outline[8].strip}#{outline[9].strip}',"              + # specimen_barcode
@@ -367,6 +372,8 @@ class CA018001_BMS
                        " STR_TO_DATE('#{outline[2].strip}',  '%c/%e/%Y'),"        + # specimen_collect_date
                        " STR_TO_DATE('#{outline[3].strip}',  '%T'),"              + # specimen_collect_time
                        " STR_TO_DATE('#{outline[4].strip}',  '%c/%e/%Y %l:%i'),"  + # specimen_receive_datetime
+                       ' NULL,'                                                   + # treatment
+                       ' NULL,'                                                   + # arm
                        " #{visit_name},"                                          + # visit_name
                        " '#{specimen_barcode}',"                                  + # specimen_barcode
                        " '#{outline[7].strip}',"                                  + # specimen_identifier
@@ -436,8 +443,22 @@ class CA018001_QINV
                }.freeze
 
   SPECIMEN_TYPE = {
-                    :BLOCK     => 'Tissue',
-                  }.freeze
+      :BLOCK                      => 'Tissue',
+      :ADADRUG1                   => 'Serum',
+      :ADADRUG2                   => 'Serum',
+      :FRESHTISSUEIHCTOQ2         => 'Tissue',
+      :FRESHTISSUERNA             => 'Tissue',
+      :PATHOLOGYREPORTFRESHTISSUE => 'Pathology Report',
+      :PKDRUG1                    => 'Serum',
+      :PKDRUG2                    => 'PK DRUG 2',
+      :SERUMFACTORSPRIMARY        => 'Serum',
+      :SERUMFACTORSSECONDARY      => 'Serum',
+  }.freeze
+
+  SPECIMEN_STATUS = {
+      :AtLab     => 'In Inventory',
+      :Shipped   => 'In Transit',
+  }.freeze
 
   def initialize(logger)
     @logger = logger
@@ -469,11 +490,12 @@ class CA018001_QINV
       specimen_barcode   = outline[11].split('-')[0]+outline[11].split('-')[1].to_s.rjust(2, '0')
 
       subject_gender     = (outline[9] == 'F') ? 'Female' : 'Male'
-      specimen_type      = (outline[13].nil?)  ? 'NULL'   : "'#{SPECIMEN_TYPE[outline[13].to_sym]}'"
+      specimen_type      = (outline[13].nil?)  ? 'NULL'   : "'#{SPECIMEN_TYPE[outline[13].gsub(/[^a-zA-Z0-9]/, '').to_sym]}'"
       specimen_parent    = (outline[30].nil?)  ? 'NULL'   : "'#{outline[30]}'"
       specimen_ischild   = (outline[30].nil?)  ? "'N'"    : "'Y'"
       specimen_shipdate  = (outline[35].nil?)  ? 'NULL'   : "STR_TO_DATE('#{outline[35].strip}', '%Y-%m-%d')"
       specimen_condition = (outline[20].nil?)  ? 'NULL'   : "'#{outline[20]}'"
+      specimen_status    = (outline[16].nil?)  ? 'NULL'   : "'#{SPECIMEN_STATUS[outline[16].gsub(/[^a-zA-Z0-9]/, '').to_sym]}'"
 
       values_clause <<
           " ('#{outline[0]}',"                                        + # study_protocol_id
@@ -484,15 +506,17 @@ class CA018001_QINV
           "  STR_TO_DATE('#{outline[17].strip}', '%Y-%m-%d'),"        + # specimen_collect_date
           "  STR_TO_DATE('#{outline[19].strip}', '%k:%i'),"           + # specimen_collect_time
           "  STR_TO_DATE('#{outline[34].strip}', '%Y-%m-%d'),"        + # specimen_receive_datetime
+          ' NULL,'                                                    + # treatment
+          ' NULL,'                                                    + # arm
           "  '#{visit_name}',"                                        + # visit_name
           "  '#{specimen_barcode}',"                                  + # specimen_barcode
           "  '#{outline[11].strip}',"                                 + # specimen_identifier
           "   #{specimen_type},"                                      + # specimen_type
-          '   NULL,'                                                  + # specimen_name
+          "   #{outline[13].insert_value}"                            + # specimen_name
           "   #{specimen_parent},"                                    + # specimen_parent
           "   #{specimen_ischild},"                                   + # specimen_ischild
           "   #{specimen_condition},"                                 + # specimen_condition
-          "   'In Inventory',"                                        + # specimen_status
+          "   #{specimen_status},"                                    + # specimen_status
           '  NULL,'                                                   + # specimen_comment
           "   #{specimen_shipdate},"                                  + # specimen_shipdate
           '  NULL,'                                                   + # shipped_location

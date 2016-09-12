@@ -6,6 +6,7 @@ require_relative 'dt_config'
 # Regeneron
 require_relative 'regeneron'
 require_relative 'r1033_hv_1204'
+require_relative 'r2222_hv_1326'
 require_relative 'r727_cl_1118'
 require_relative 'r727_cl_1112'
 require_relative 'r727_cl_1308'
@@ -14,7 +15,9 @@ require_relative 'il1t-ga-1101'
 require_relative 'r668-ad-1416'
 require_relative 'r1033_hv_1223'
 require_relative 'r2176_3_amd_1303'
+require_relative 'r668_ad_1307'
 require_relative 'r668_ad_1314'
+require_relative 'r668_ad_1334'
 require_relative 'r1500-cl-1321'
 require_relative 'r1908-1909-alg-1325'
 
@@ -56,7 +59,7 @@ class DT_Transfers
     DIR_SEPARATOR = '/'
   end
 
-  INSERT_FRAME = 10000
+  INSERT_FRAME = 9000
   INSERT_STATEMENTS = {
       :INVENTORY_V1_0 =>
           '
@@ -69,6 +72,8 @@ class DT_Transfers
               specimen_collect_date,
               specimen_collect_time,
               received_datetime,
+              treatment,
+              arm,
               visit_name,
               specimen_barcode,
               specimen_identifier,
@@ -175,8 +180,10 @@ class DT_Transfers
 			        primary_race,
 			        secondary_race,
 			        ethnicity,
-              treatment_arm,
-              track,
+              treatment,
+              arm,
+              ICF_signing_date,
+              ICF_withdrawl_date,
 			        vendor_code
              ) VALUES',
       :IVRT_V1_0 =>
@@ -200,8 +207,10 @@ class DT_Transfers
 			        primary_race,
 			        secondary_race,
 			        ethnicity,
-              treatment_arm,
-              track,
+              treatment,
+              arm,
+              ICF_signing_date,
+              ICF_withdrawl_date,
 			        vendor_code
              ) VALUES',
     }.freeze
@@ -712,6 +721,103 @@ class DT_Transfers
                               'CUMULATIVE',
                               R1908_1909_ALG_1325_LCRPInv.new(logger),
                               logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1307',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1307_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1307',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1307_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1307',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1307_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1307',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1307_LCRPInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2222-HV-1326',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2222_HV_1326_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2222-HV-1326',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2222_HV_1326_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2222-HV-1326',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2222_HV_1326_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R2222-HV-1326',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2222_HV_1326_LCRPInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1334',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1334_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1334',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1334_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R668-AD-1334',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1334_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1334',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1334_PPDLInv.new(logger),
+                              logger)
+
 
     @my_connections = DT_Connections.new(logger)
     @logger = logger

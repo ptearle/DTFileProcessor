@@ -1,6 +1,6 @@
 require 'mysql2'
 
-class R668_AD_1416_site
+class R668_AD_1334_site
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer initialized"
@@ -84,7 +84,15 @@ class R668_AD_1416_site
   end
 end
 
-class R668_AD_1416_subject
+class R668_AD_1334_subject
+
+  ARM = {
+      :DUPILUMAB300MGQ2W  => 'Dupilumab – 300mg Q2W',
+      :DUPILUMAB300MGQW   => 'Dupilumab – 300mg QW',
+      :NOTTRT             => 'Placebo',
+      :PLACEBOQW          => 'Placebo',
+  }.freeze
+
   def initialize(logger)
     @logger = logger
     @logger.info "#{self.class.name} filer Initialized"
@@ -117,6 +125,10 @@ class R668_AD_1416_subject
 
     @processing_lines.each do |outline|
 
+      subject_arm         = (outline[9].nil?)  ? ' NULL,' : " #{ARM[outline[9].gsub(/[^a-zA-Z0-9]/, '').to_sym].insert_value}"
+      icf_signing_date    = (outline[7].nil?)  ? ' NULL,' : "  STR_TO_DATE(#{outline[7].insert_value} '%m/%d/%Y'),"
+      icf_withdrawl_date  = (outline[10].nil?) ? ' NULL,' : "  STR_TO_DATE(#{outline[10].insert_value} '%m/%d/%Y'),"
+
       values_clause <<
           "(#{outline[0].insert_value}"                         + # study_protocol_id
               " #{outline[1][0..5].insert_value}"                   + # site_number
@@ -136,8 +148,10 @@ class R668_AD_1416_subject
               ' NULL,'                                              + # primary_race
               ' NULL,'                                              + # secondary_race
               ' NULL,'                                              + # ethnicity
-              ' NULL,'                                              + # treatment_arm
-              ' NULL,'                                              + # track
+              " 'Dupilumab',"                                        + # treatment
+              "  #{subject_arm}"                                    + # arm
+              "  #{icf_signing_date}"                               + # ICF_signing_date
+              "  #{icf_withdrawl_date}"                             + # ICF withdrawl_date
               " '#{vendor}'"                                        + # vendor_code
               ")"
     end
@@ -147,7 +161,7 @@ class R668_AD_1416_subject
   end
 end
 
-class R668_AD_1416_RGRNInv
+class R668_AD_1334_RGRNInv
 
   SPECIMEN_TYPE = {
       'Hu Whole Blood'         => 'Whole Blood',
@@ -163,7 +177,7 @@ class R668_AD_1416_RGRNInv
       #      :V5          => 'Visit 5',
       :V6          => 'Visit 6',
       #      :V7          => 'Visit 7',
-      #      :V8          => 'Visit 8',
+      :V8          => 'Visit 8',
       #      :V9          => 'Visit 9',
       :V10         => 'Visit 10',
       #      :V11         => 'Visit 11',
@@ -174,6 +188,7 @@ class R668_AD_1416_RGRNInv
       :V21         => 'Visit 21 - End of Study',
       :VET     	   => 'Early Termination',
       :VUNSCHED    => 'Unscheduled',
+      :VMON        => 'Unscheduled'
   }.freeze
 
   def initialize(logger)
@@ -191,6 +206,18 @@ class R668_AD_1416_RGRNInv
 
   def processor(this_connection)
     @logger.info "#{self.class.name} processor start'"
+
+    my_select = "SELECT   MAX(dsv.id),
+                          dsv.site_number,
+                          dsv.subject_code,
+                          dsv.arm
+                 FROM     dts_subject_v1_0 dsv
+                 WHERE    dsv.study_protocol_id = 'R668-AD-1334'
+                 GROUP BY dsv.site_number,
+                          dsv.subject_code;"
+
+    @my_subjects = this_connection.query(my_select)
+
     @processing_lines = @inbound_lines
     @logger.info "#{self.class.name} processor end"
     @processing_lines.length
@@ -205,19 +232,40 @@ class R668_AD_1416_RGRNInv
     end
 
     values_clause = Array.new
-
+@logger.info "Subjects ->#{@my_subjects.count}<-"
     @processing_lines.each do |outline|
+
+      if outline[1].nil?
+        site_id     = 'De-Identified'
+        subject_id  = 'De-Identified'
+        arm         = 'De-Identified'
+        visit       = 'Unscheduled'
+      else
+        site_id     = outline[1]
+        subject_id  = outline[6]
+
+        if @my_subjects.find {|x| x['site_number'] == site_id && x['subject_code'] == subject_id}.nil?
+          @logger.warn "Subject ->#{subject_id}<- at site ->#{site_id}<- not found in subjects file"
+          arm = 'UNKNOWN'
+        else
+          arm = @my_subjects.find {|x| x['site_number'] == site_id && x['subject_code'] == subject_id}['arm']
+        end
+
+        visit       = VISIT_MAP[('V' + outline[7]).to_sym]
+      end
 
       values_clause <<
           "(#{outline[0].insert_value}"                                  + # study_protocol_id
-              " #{outline[1].insert_value}"                              + # site_number
-              " #{outline[6].insert_value}"                              + # subject_number
+              " #{site_id.insert_value}"                                 + # site_number
+              " #{subject_id.insert_value}"                              + # subject_code
               ' NULL,'                                                   + # subject_gender
               ' NULL,'                                                   + # subject_DOB
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"    + # specimen_collect_date
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y %T')," + # specimen_collect_time
               " STR_TO_DATE(#{outline[17].insert_value} '%c/%e/%Y %T')," + # specimen_receive_datetime
-              " #{VISIT_MAP[('V' + outline[7]).to_sym].insert_value}"    + # visit_name
+              " 'Dupilumab',"                                             + # treatment
+              " #{arm.insert_value}"                                     + # arm
+              " #{visit.insert_value}"                                   + # visit_name
               " #{outline[3].insert_value}"                              + # specimen_barcode
               " #{outline[4].insert_value}"                              + # specimen_identifier
               " #{SPECIMEN_TYPE[outline[11].strip].insert_value}"        + # specimen_type
@@ -239,7 +287,7 @@ class R668_AD_1416_RGRNInv
   end
 end
 
-class R668_AD_1416_PPDLInv
+class R668_AD_1334_PPDLInv
 
   SPECIMEN_TYPE = {
       'Whole Blood (EDTA)'  => 'Whole Blood',
@@ -334,6 +382,7 @@ class R668_AD_1416_PPDLInv
 
     @processing_lines.each do |outline|
 
+
       if outline[2].strip == '999'
         site_id     = 'De-Identified'
         subject_id  = 'De-Identified'
@@ -346,31 +395,31 @@ class R668_AD_1416_PPDLInv
       specimen_type   = (outline[15].nil?) ? ' NULL,' : " #{SPECIMEN_TYPE[outline[15]].insert_value}"
       specimen_status = (outline[18].nil?) ? ' NULL,' : " #{SPECIMEN_STATUS[outline[18].gsub(/[^a-zA-Z]/, '').to_sym].insert_value}"
 
-      visit_name = " #{VISIT_MAP[outline[8].gsub(/\s+/, '').to_sym].insert_value}"
-
       values_clause <<
-          " (#{outline[1].insert_value}"                                    + # study_protocol_id
-              "  #{site_id.insert_value}"                                   + # site_number
-              "  #{subject_id.insert_value}"                                + # subject_code
-              ' NULL,'                                                      + # subject_gender
-              ' NULL,'                                                      + # subject_DOB
-              "  STR_TO_DATE(#{outline[9].insert_value} '%d-%b-%Y'),"       + # specimen_collect_date
-              ' NULL,'                                                      + # specimen_collect_time
-              "  STR_TO_DATE(#{outline[10].insert_value} '%d-%b-%Y'),"      + # specimen_receive_datetime
-              "  #{visit_name}"                                             + # visit_name
-              "  #{outline[12].insert_value}"                               + # specimen_barcode
-              "  #{outline[13].insert_value}"                               + # specimen_identifier
-              "  #{specimen_type}"                                          + # specimen_type
-              "  #{outline[14].insert_value}"                               + # specimen_name
-              ' NULL,'                                                      + # specimen_parent
-              "  'N',"                                                      + # specimen_ischild
-              "  #{outline[17].insert_value}"                               + # specimen_condition
-              "  #{specimen_status}"                                        + # specimen_status
-              "  #{outline[19].insert_value}"                               + # specimen_comment
-              "  #{shipped_date}"                                           + # shipped_date
-              ' NULL,'                                                      + # shipped_location
-              ' NULL,'                                                      + # testing_description
-              "  '#{vendor}'"                                               + # vendor_code
+          " (#{outline[1].insert_value}"                                 + # study_protocol_id
+              " #{site_id.insert_value}"                                 + # site_number
+              " #{subject_id.insert_value}"                              + # subject_code
+              ' NULL,'                                                   + # subject_gender
+              ' NULL,'                                                   + # subject_DOB
+              " STR_TO_DATE(#{outline[9].insert_value} '%d-%b-%Y'),"     + # specimen_collect_date
+              ' NULL,'                                                   + # specimen_collect_time
+              " STR_TO_DATE(#{outline[10].insert_value} '%d-%b-%Y'),"    + # specimen_receive_datetime
+              " 'REGN2222',"                                             + # treatment
+              " #{arm.insert_value}"                                     + # arm
+              " #{visit.insert_value}"                                   + # visit_name
+              " #{outline[12].insert_value}"                             + # specimen_barcode
+              " #{outline[13].insert_value}"                             + # specimen_identifier
+              " #{specimen_type}"                                        + # specimen_type
+              " #{outline[14].insert_value}"                             + # specimen_name
+              ' NULL,'                                                   + # specimen_parent
+              " 'N',"                                                    + # specimen_ischild
+              " #{outline[17].insert_value}"                             + # specimen_condition
+              " #{specimen_status}"                                      + # specimen_status
+              " #{outline[19].insert_value}"                             + # specimen_comment
+              " #{shipped_date}"                                         + # shipped_date
+              ' NULL,'                                                   + # shipped_location
+              ' NULL,'                                                   + # testing_description
+              "  '#{vendor}'"                                            + # vendor_code
               " )"
     end
 
