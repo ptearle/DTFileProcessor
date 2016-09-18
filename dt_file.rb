@@ -7,6 +7,7 @@ require_relative 'dt_config'
 require_relative 'regeneron'
 require_relative 'r1033_hv_1204'
 require_relative 'r2222_hv_1326'
+require_relative 'r2009_hv_1304'
 require_relative 'r727_cl_1118'
 require_relative 'r727_cl_1112'
 require_relative 'r727_cl_1308'
@@ -14,6 +15,7 @@ require_relative 'r1033_src_1239'
 require_relative 'il1t-ga-1101'
 require_relative 'r668-ad-1416'
 require_relative 'r1033_hv_1223'
+require_relative 'r1193_dm_1402'
 require_relative 'r2176_3_amd_1303'
 require_relative 'r668_ad_1307'
 require_relative 'r668_ad_1314'
@@ -817,7 +819,70 @@ class DT_Transfers
                               'CUMULATIVE',
                               R668_AD_1334_PPDLInv.new(logger),
                               logger)
-
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2009-HV-1304',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2009_HV_1304_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2009-HV-1304',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2009_HV_1304_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R2009-HV-1304',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2009_HV_1304_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('MDPC',
+                              'Regeneron',
+                              'R2009-HV-1304',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2009_HV_1304_MDPCInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1193-DM-1402',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_DM_1402_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1193-DM-1402',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_DM_1402_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1193-DM-1402',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_DM_1402_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('MDPC',
+                              'Regeneron',
+                              'R1193-DM-1402',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_DM_1402_MDPCInv.new(logger),
+                              logger)
 
     @my_connections = DT_Connections.new(logger)
     @logger = logger
