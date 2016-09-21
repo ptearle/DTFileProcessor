@@ -895,19 +895,15 @@ class DT_Transfers
   def get_transfer (vendor, protocol, file_type)
     @transfers.each do |this_transfer|
       @logger.debug "->#{this_transfer.vendor}<- ->#{this_transfer.protocol}<- ->#{this_transfer.file_type}<-"
-       if this_transfer.vendor == vendor and
-         this_transfer.protocol == protocol and
-         this_transfer.file_type == file_type
+       if this_transfer.vendor    == vendor   and
+          this_transfer.protocol  == protocol and
+          this_transfer.file_type == file_type
         return this_transfer
       end
     end
 
     raise "No such transfer for #{vendor} #{protocol} #{file_type}"
 
-  end
-
-  def get_root_dir (env)
-    return (env == 'PROD') ? PROD_DIR + DIR_SEPARATOR: TEST_DIR + DIR_SEPARATOR
   end
 
   def process_files (this_transfer, env)
