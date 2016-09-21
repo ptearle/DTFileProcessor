@@ -56,8 +56,8 @@ class DT_Transfers
     TEST_DIR = 'C:\SFTP_TEST'
     DIR_SEPARATOR = '\\'
   else
-    PROD_DIR = '/home/dt_file_processor/production'
-    TEST_DIR = '/home/dt_file_processor/test'
+    PROD_DIR = '/home/vendors/gss/prod'
+    TEST_DIR = '/home/vendor/gss/test'
     DIR_SEPARATOR = '/'
   end
 
