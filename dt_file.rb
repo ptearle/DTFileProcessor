@@ -21,7 +21,7 @@ require_relative 'r668_ad_1307'
 require_relative 'r668_ad_1314'
 require_relative 'r668_ad_1334'
 require_relative 'r1500-cl-1321'
-require_relative 'r1908-1909-alg-1325'
+require_relative 'r1908_1909_alg_1325'
 
 # BMS FRACTION
 require_relative 'ca018001'
