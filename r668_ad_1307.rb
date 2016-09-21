@@ -3,7 +3,7 @@ require 'mysql2'
 class R668_AD_1307_site
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer initialized"
+    @logger.debug "#{self.class.name} filer initialized"
   end
 
   def reader(inbound_file)
@@ -93,7 +93,7 @@ class R668_AD_1307_subject
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -199,7 +199,7 @@ class R668_AD_1307_RGRNInv
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -337,7 +337,7 @@ class R668_AD_1307_LCRPInv
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)

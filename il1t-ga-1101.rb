@@ -3,7 +3,7 @@ require 'mysql2'
 class IL1T_GA_1101_site
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -87,7 +87,7 @@ end
 class IL1T_GA_1101_subject
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -176,7 +176,7 @@ class IL1T_GA_1101_RGRNinv
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -282,7 +282,7 @@ class IL1T_GA_1101_LCRPInv
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
