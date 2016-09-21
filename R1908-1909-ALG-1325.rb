@@ -3,11 +3,10 @@ require 'mysql2'
 class R1908_1909_ALG_1325_site
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer initialized"
+    @logger.debug "#{self.class.name} filer initialized"
   end
 
   def reader(inbound_file)
-    @logger.debug "File name is ->#{inbound_file}<-"
     @logger.info "#{self.class.name} reader start"
     @inbound_lines = CSV.read(inbound_file, headers: true, skip_blanks: true, skip_lines: '\r', encoding:'windows-1256:utf-8')
     @logger.info "#{self.class.name} reader end"
@@ -87,7 +86,7 @@ end
 class R1908_1909_ALG_1325_subject
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -173,7 +172,7 @@ class R1908_1909_ALG_1325_RGRNInv
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
@@ -282,7 +281,7 @@ class R1908_1909_ALG_1325_LCRPInv
 
   def initialize(logger)
     @logger = logger
-    @logger.info "#{self.class.name} filer Initialized"
+    @logger.debug "#{self.class.name} filer Initialized"
   end
 
   def reader(inbound_file)
