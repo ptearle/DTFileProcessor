@@ -906,6 +906,10 @@ class DT_Transfers
 
   end
 
+  def get_root_dir (env)
+    return (env == 'PROD') ? PROD_DIR + DIR_SEPARATOR: TEST_DIR + DIR_SEPARATOR
+  end
+
   def process_files (this_transfer, env)
     @logger.info "#{(env  == 'PROD') ? 'Production' : 'Test'} file processing start - #{this_transfer.vendor} #{this_transfer.file_type} file for protocol #{this_transfer.protocol}"
 
