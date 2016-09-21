@@ -57,7 +57,7 @@ class DT_Transfers
     DIR_SEPARATOR = '\\'
   else
     PROD_DIR = '/home/vendors/gss/prod'
-    TEST_DIR = '/home/vendor/gss/test'
+    TEST_DIR = '/home/vendors/gss/test'
     DIR_SEPARATOR = '/'
   end
 
