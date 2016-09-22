@@ -9,7 +9,7 @@ require_relative 'dt_file'
 
 my_env = DT_env.new(ARGV[3])
 
-logger          = Logger.new("#{my_env.get_root_dir}dt_file_processor.log", shift_age = 'daily')
+logger          = Logger.new("#{my_env.get_root_dir}#{ARGV[1]}_#{ARGV[2]}.log", shift_age = 'daily')
 logger.level    = Logger::INFO
 logger.progname = 'dt_file_processor'
 
