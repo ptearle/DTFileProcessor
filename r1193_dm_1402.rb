@@ -1,5 +1,4 @@
 require 'mysql2'
-
 class R1193_DM_1402_site
   def initialize(logger)
     @logger = logger
