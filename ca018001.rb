@@ -176,9 +176,11 @@ class CA018001_ivrt
               treatment_arm = 'NIVO+BMS986016'
             when 'Nivolumab in Combination with Dasatinib'
               treatment_arm = 'NIVO+DASATINIB'
+            when 'Nivolumab Monotherapy'
+              treatment_arm = 'Nivolumab'
             else
-              @loger.warn "Unknown treatment arm ->#{outline[6]} on line #{values_clause.length+1}<-"
-              treatment_arm = "Unknown treatment arm ->#{outline[6]}<-"
+              @logger.warn "Unknown treatment arm ->#{outline[5]} on line #{values_clause.length+1}"
+              treatment_arm = "Unknown treatment arm ->#{outline[5]}<-"
           end
 
           values_clause <<
@@ -603,7 +605,7 @@ class CA018001_QASY
     @inbound_lines.each do |assayline|
       lines += 1
 
-      # Ignore if assay code starts with "SMT""
+      # Ignore if assay code starts with "SMT"
       if assayline[26].strip.start_with?('SMT')
         next
       end
