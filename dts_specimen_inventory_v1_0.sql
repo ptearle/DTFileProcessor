@@ -1,4 +1,4 @@
-CREATE TABLE cl017.dts_specimen_inventory_v1_0 (
+CREATE TABLE dts_specimen_inventory_v1_0 (
   id int(11) NOT NULL AUTO_INCREMENT,
   study_protocol_id varchar(50) DEFAULT NULL,
   site_number varchar(50) DEFAULT NULL,
@@ -15,6 +15,8 @@ CREATE TABLE cl017.dts_specimen_inventory_v1_0 (
   specimen_identifier varchar(50) DEFAULT NULL,
   specimen_type varchar(50) DEFAULT NULL,
   specimen_name varchar(50) DEFAULT NULL,
+  specimen_designation varchar(50) DEFAULT NULL,
+  specimen_designation_detail varchar(50) DEFAULT NULL,
   specimen_parent_id varchar(50) DEFAULT NULL,
   specimen_ischild varchar(50) DEFAULT NULL,
   specimen_condition varchar(50) DEFAULT NULL,

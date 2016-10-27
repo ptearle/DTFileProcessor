@@ -1,4 +1,4 @@
-CREATE TABLE cl017.dts_subject_v1_0 (
+CREATE TABLE dts_subject_v1_0 (
   id int(11) NOT NULL AUTO_INCREMENT,
   study_protocol_id varchar(50) DEFAULT NULL,
   site_number varchar(50) DEFAULT NULL,

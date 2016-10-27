@@ -287,19 +287,19 @@ class CA018001_EDD
 
     @processing_lines.each do |outline|
 
-      parent_id        = (outline[11] == '')           ? "NULL"   : "'#{outline[8].strip}#{outline[11].strip}'"
+      parent_id        = (outline[11].nil?)           ? "NULL"   : "'#{outline[8].strip}#{outline[11].strip}'"
       is_child         = (parent_id == 'NULL')        ? 'N'      : 'Y'
       specimen_type    = (outline[16][0..2] == 'SCR') ? 'Tissue' : 'Whole Blood'
-      receive_datetime = (is_child == 'Y')            ? "NULL"   : "STR_TO_DATE('#{outline[15].strip}',  '%d-%b-%Y %T')"
+      receive_datetime = (is_child == 'Y')            ? "NULL"   : "STR_TO_DATE('#{outline[15].strip}',  '%c/%e/%Y %H:%i')"
 
       values_clause <<
                        " ('CA018-001',"                                           + # study_protocol_id
                        "  '#{outline[2].strip}',"                                 + # site_number
                        "  '#{outline[4].strip}',"                                 + # subject_number
                        "  '#{outline[6].strip}',"                                 + # subject_gender
-                       "  STR_TO_DATE('#{outline[5].strip}',  '%d-%b-%Y'),"       + # subject_DOB
-                       "  STR_TO_DATE('#{outline[7].strip}',  '%d-%b-%Y'),"       + # specimen_collect_date
-                       "  STR_TO_DATE('#{outline[7].strip}',  '%d-%b-%Y %T'),"    + # specimen_collect_time
+                       "  STR_TO_DATE('#{outline[5].strip.insert(-3, '19')}',  '%e-%b-%Y'),"    + # subject_DOB
+                       "  STR_TO_DATE('#{outline[7].strip}',  '%c/%e/%Y %H:%i'),"    + # specimen_collect_date
+                       "  STR_TO_DATE('#{outline[7].strip}',  '%c/%e/%Y %H:%i'),"    + # specimen_collect_time
                        "  #{receive_datetime},"                                   + # specimen_receive_datetime
                        ' NULL,'                                                   + # treatment
                        ' NULL,'                                                   + # arm

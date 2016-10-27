@@ -5,6 +5,7 @@ require_relative 'dt_config'
 
 # Regeneron
 require_relative 'regeneron'
+require_relative 'r1033_hv_1107'
 require_relative 'r1033_hv_1204'
 require_relative 'r2222_hv_1326'
 require_relative 'r2009_hv_1304'
@@ -22,6 +23,11 @@ require_relative 'r668_ad_1314'
 require_relative 'r668_ad_1334'
 require_relative 'r1500-cl-1321'
 require_relative 'r1908_1909_alg_1325'
+
+#Takeda
+require_relative 'c16014'
+require_relative 'c16019'
+require_relative 'c16021'
 
 # BMS FRACTION
 require_relative 'ca018001'
@@ -81,6 +87,8 @@ class DT_Transfers
               specimen_identifier,
               specimen_type,
               specimen_name,
+              specimen_designation,
+              specimen_designation_detail,
               specimen_parent_id,
               specimen_ischild,
               specimen_condition,
@@ -883,7 +891,102 @@ class DT_Transfers
                               'CUMULATIVE',
                               R1193_DM_1402_MDPCInv.new(logger),
                               logger)
-
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1107',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1107_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1107',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1107_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1107',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1107_RGRNInv.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16014',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16014_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16014',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16014_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16014',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16014_Inv.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16019',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16019_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16019',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16019_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16019',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16019_Inv.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16021',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16021_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16021',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16021_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('TKDA',
+                              'Takeda',
+                              'C16021',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16021_Inv.new(logger),
+                              logger)
     @my_connections = DT_Connections.new(logger)
     @logger = logger
   end
