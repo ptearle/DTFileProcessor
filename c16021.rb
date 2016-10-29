@@ -539,190 +539,584 @@ end
 
 class C16021_Inv
   SPECIMEN_HUB = {
-      :Belgium      => 'LCEU',
-      :Canada       => 'LCUS',
-      :France       => 'LCEU',
-      :Japan        => 'LCAP',
-      :NewZealand   => 'LCAP',
-      :Russia       => 'LCEU',
-      :SouthKorea   => 'LCAP',
-      :UnitedStates => 'LCUS',
-  }.freeze
-
-  PARENT_OFFSET = {
-      :MMCytogeneticsFISHAbnCellsAmp1q21      => -1,
-      :MMCytogeneticsFISHAbnCellsDel17        => -1,
-      :MMCytogeneticsFISHAbnCellst1416        => -1,
-      :MMCytogeneticsFISHAbnCellst414         => -1,
-      :MMCytogeneticsFISHCellsCountedAmp1q21  => -1,
-      :MMCytogeneticsFISHCellsCountedDel17    => -1,
-      :MMCytogeneticsFISHCellsCountedt141     => -1,
-      :MMCytogeneticsFISHCellsCountedt414     => -1,
-      :MMCytogeneticsFISHCommentAmp1q21       => -1,
-      :MMCytogeneticsFISHCommentDel17         => -1,
-      :MMCytogeneticsFISHCommentt1416         => -1,
-      :MMCytogeneticsFISHCommentt414          => -1,
-      :MMCytogeneticsFISHResultAmp1q21        => -1,
-      :MMCytogeneticsFISHResultDel17          => -1,
-      :MMCytogeneticsFISHResultt1416          => -1,
-      :MMCytogeneticsFISHResultt414           => -1,
-      :PCDNARNAExtractionDNAconcentration     => -3,
-      :PCDNARNAExtractionDNAqualityA260280    => -3,
-      :PCDNARNAExtractionDNAtotalyield        => -3,
-      :PCDNARNAExtractionExtractionDate       => -3,
-      :PCDNARNAExtractionRNAconcentration     => -3,
-      :PCDNARNAExtractionRNARINScore          => -3,
-      :PCDNARNAExtractionRNAtotalyield        => -3,
-      :BMDNAStorage1                          => -1,
-      :BMDNAStorage2                          => -2,
-      :BMRNAStorage1                          => -3,
-      :BMRNAStorage2                          => -4,
-      :DNAAliquotVolume                       => -3,
-      :EnrichedPCFISHStorage                  => -1,
-      :FISHSlideStorage                       => -1,
-      :PCDNARNAStorage                        => -3,
-      :WBDNAStorage1                          => -1,
-      :WBDNAStorage2                          => -2,
+      :Argentina       => 'LCUS',
+      :Australia       => 'LCAP',
+      :Austria         => 'LCEU',
+      :Belgium         => 'LCEU',
+      :Brazil          => 'LCUS',
+      :Canada          => 'LCUS',
+      :Chile           => 'LCUS',
+      :Colombia        => 'LCUS',
+      :CzechRepublic   => 'LCEU',
+      :Denmark         => 'LCEU',
+      :France          => 'LCEU',
+      :Germany         => 'LCEU',
+      :Greece          => 'LCEU',
+      :Hungary         => 'LCEU',
+      :Israel          => 'LCEU',
+      :Italy           => 'LCEU',
+      :Japan           => 'LCAP',
+      :Mexico          => 'LCUS',
+      :Netherlands     => 'LCEU',
+      :Norway          => 'LCEU',
+      :Poland          => 'LCEU',
+      :Portugal        => 'LCEU',
+      :RepublicofKorea => 'LCAP',
+      :Russia          => 'LCEU',
+      :Serbia          => 'LCEU',
+      :Singapore       => 'LCAP',
+      :SouthAfrica     => 'LCEU',
+      :Spain           => 'LCEU',
+      :Sweden          => 'LCEU',
+      :Switzerland     => 'LCEU',
+      :Taiwan          => 'LCAP',
+      :Thailand        => 'LCAP',
+      :Turkey          => 'LCEU',
+      :Ukraine         => 'LCEU',
+      :UnitedKingdom   => 'LCEU',
+      :UnitedStates    => 'LCUS'
   }.freeze
 
   SPECIMEN_TYPE = {
-      :BMACD138PlasmaCellEnPostIsoCD19Lymphs          => 	  'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoCD19PCs  	          =>    'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoLymphsViable  	    =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoPCsViable  	        =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoTNCViable  	        =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoViableTotal   	    =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIso138RGNCountViable  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIso38RGNCountViable  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoPCRGNCountViable  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoTNCRGNCountViable  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoTotalCount  	      =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPostIsoViableRGNCountTot  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoCD19Lymphs  	        =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoCD19PCs  	          =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoLymphsViable       	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoPCsViable  	        =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoTNCViable  	        =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoViableTotal  	      =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIso138RGNCountViable  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIso38RGNCountViable 	  =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoPCRGNCountViable  	  =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoTNCRGNCountViable  	=>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoTotalCount  	        =>  	'Bone Marrow Aspirate',
-      :BMACD138PlasmaCellEnPreIsoViableRGNCountTot  	=>  	'Bone Marrow Aspirate',
-      :DiffMorphologyCommentsDifferentialComments  	  =>  	'Whole Blood',
-      :DiffMorphologyCommentsPlateletAssessment  	    =>  	'Whole Blood',
-      :HematologyPlateletCount  	                    =>  	'Whole Blood',
-      :ManualDiffPlasmaCellsAbsolute  	              =>  	'Whole Blood',
-      :ManualDiffPlasmaCellsPercent  	                =>  	'Whole Blood',
-      :MLNMMMRD2AssayBMSpecimenvolume  	              =>  	'Enriched Plasma Cells',
-      :MLNMMMRD2AssayBMTotalCellCount  	              =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHAbnCellsAmp1q21  	          =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHAbnCellsDel17  	            =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHAbnCellst1416  	            =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHAbnCellst414  	              =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCellsCountedAmp1q21  	      =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCellsCountedDel17  	        =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCellsCountedt1416  	        =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCellsCountedt414  	          =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCommentAmp1q21  	            =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCommentDel17             	  =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCommentt1416  	              =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHCommentt414  	              =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHResultAmp1q21  	            =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHResultDel17  	              =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHResultt1416  	              =>  	'Enriched Plasma Cells',
-      :MMCytogeneticsFISHResultt414  	                =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionDNAconcentration  	          =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionDNAqualityA260280  	        =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionDNAtotalyield  	            =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionExtractionDate  	            =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionRNAconcentration  	          =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionRNARINScore 	                =>  	'Enriched Plasma Cells',
-      :PCDNARNAExtractionRNAtotalyield  	            =>  	'Enriched Plasma Cells',
-      :TotalViableCellCountAspriateVolumeUponReceipt  =>  	'Bone Marrow Aspirate',
-      :TotalViableCellCountNmbrcellssavedforDNARNA    =>  	'Bone Marrow Aspirate',
-      :TotalViableCellCountNmbrcellssavedforFISH  	  =>  	'Bone Marrow Aspirate',
-      :TotalViableCellCountTotalcellcounthemocyto  	  =>  	'Bone Marrow Aspirate',
-      :TotalViableCellCountViablecellcounthemocyto    =>  	'Bone Marrow Aspirate',
-      :WBDNAExtractionDNAconcentration  	            =>  	'Whole Blood',
-      :WBDNAExtractionDNAExtractionDate  	            =>  	'Whole Blood',
-      :WBDNAExtractionDNAYield  	                    =>  	'Whole Blood',
-      :OfDNAAliquots  	                              =>  	'Whole Blood',
-      :OfNanDNAAliquots  		                          =>  	'Whole Blood',
-      :OfRNAAliquots  			                          =>  	'Whole Blood',
-      :BMDNAStorage1  			                          =>  	'DNA',
-      :BMDNAStorage2  			                          =>  	'DNA',
-      :BMRNAStorage1  			                          =>  	'RNA',
-      :BMRNAStorage2  			                          =>  	'RNA',
-      :BoneBiomarkerStorage1  	                      =>  	'Serum',
-      :BoneBiomarkerStorage2  	                      =>  	'Serum',
-      :BoneBiomarkerStorage3  	                      =>  	'Serum',
-      :BoneBiomarkerStorage4  	                      =>  	'Serum',
-      :DNAAliquotVolume  	                            =>  	'Whole Blood',
-      :EnrichedPCFISHStorage  	                      =>  	'Enriched Plasma Cells',
-      :FISHSlideStorage  	                            =>  	'Enriched Plasma Cells',
-      :GermlineDNAStorage  	                          =>  	'Whole Blood',
-      :MRDPanel  	                                    =>  	'Enriched Plasma Cells',
-      :PCDNARNAStorage  	                            =>  	'Whole Blood',
-      :PlasmaProteasomeStor1  	                      =>  	'Plasma',
-      :PlasmaProteasomeStor2  	                      =>  	'Plasma',
-      :WBDNAStorage1  	                              =>  	'DNA',
-      :WBDNAStorage2  	                              =>  	'DNA',
+      :S24hrUPEPIFEAlbuminUrine                         => 'Urine',
+      :S24hrUPEPIFEAlpha1GlobulinUrine                  => 'Urine',
+      :S24hrUPEPIFEAlpha2GlobulinUrine                  => 'Urine',
+      :S24hrUPEPIFEBetaGlobulinUrine                    => 'Urine',
+      :S24hrUPEPIFEGammaGlobulinUrine                   => 'Urine',
+      :S24hrUPEPIFEImmunofixationResultUrine            => 'Urine',
+      :S24hrUPEPIFEMSpike                               => 'Urine',
+      :S24hrUPEPIFEMSpike24hr                           => 'Urine',
+      :S24hrUPEPIFETotalPrUrine24hr                     => 'Urine',
+      :S24hrUPEPIFETotalPrUrineRandom                   => 'Urine',
+      :SIgDIFE                                          => 'Serum',
+      :SIgEIFE                                          => 'Serum',
+      :SIgEIgDIFEStorage                                => 'Serum',
+      :SRubeolaAntibodiesIgG                            => 'Serum',
+      :SVaricellaZosterVAbIgG                           => 'Serum',
+      :SIgA                                             => 'Serum',
+      :SIgG                                             => 'Serum',
+      :SIgM                                             => 'Serum',
+      :SBlockSectioningofSlidesSectioned                => 'Bone Marrow Aspirate',
+      :SBlockSectioningSectioningComment                => 'Bone Marrow Aspirate',
+      :SBlockSectioningSlideSectioningDate              => 'Bone Marrow Aspirate',
+      :SMRDBMASlideCaseBlock                            => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoCD19Lymphs                       => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoCD19PCs                          => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoLymphsViable                     => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoPCsViable                        => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoTNCViable                        => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoViableTotal                      => 'Bone Marrow Aspirate',
+      :SBMACD138PostIso138RGNCountViable                => 'Bone Marrow Aspirate',
+      :SBMACD138PostIso38RGNCountViable                 => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoPCRGNCountViable                 => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoTNCRGNCountViable                => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoTotalCount                       => 'Bone Marrow Aspirate',
+      :SBMACD138PostIsoViableRGNCountTot                => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoCD19Lymphs                        => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoCD19PCs                           => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoLymphsViable                      => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoPCsViable                         => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoTNCViable                         => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoViableTotal                       => 'Bone Marrow Aspirate',
+      :SBMACD138PreIso138RGNCountViable                 => 'Bone Marrow Aspirate',
+      :SBMACD138PreIso38RGNCountViable                  => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoPCRGNCountViable                  => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoTNCRGNCountViable                 => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoTotalCount                        => 'Bone Marrow Aspirate',
+      :SBMACD138PreIsoViableRGNCountTot                 => 'Bone Marrow Aspirate',
+      :SBMATotalCellCountAspriateVolumeUponReceipt      => 'Bone Marrow Aspirate',
+      :SBMATotalCellCountBMATotalcellcount              => 'Bone Marrow Aspirate',
+      :SBMATotalCellCountBMAViablecellcount             => 'Bone Marrow Aspirate',
+      :SBMATotalCellCountNmbrcellssavedforFISH          => 'Bone Marrow Aspirate',
+      :SBMACD138Comment                                 => 'Bone Marrow Aspirate',
+      :SBMATTCComment                                   => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoCD19Lymphs0                     => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoCD19PCs0                        => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoLymphsViable                    => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoPCsViable0                      => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoTNCViable0                      => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoViableTotal0                    => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIso38RGNCountVia                   => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoPCRGNCountVia                   => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoTNCRGNCountVia                  => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoTotalCount0                     => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIsoViaRGNCounttot                  => 'Bone Marrow Aspirate',
+      :SBMACD1380PostIso138RGNCountVia                  => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoCD19Lymphs0                      => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoCD19PCs0                         => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoLymphsViable0                    => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoPCsViable0                       => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoTNCViable0                       => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoViableTotal0                     => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIso138RGNCountVia                   => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIso38RGNCountVia                    => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoPCRGNCountVia                    => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoTNCRGNCountVia                   => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoTotalCount0                      => 'Bone Marrow Aspirate',
+      :SBMACD1380PreIsoViaRGNCounttot                   => 'Bone Marrow Aspirate',
+      :SChemistryAlbumin                                => 'Serum',
+      :SChemistryAlkalinePhosphatase                    => 'Serum',
+      :SChemistryALTSGPT                                => 'Serum',
+      :SChemistryASTSGOT                                => 'Serum',
+      :SChemistryBicarbonate                            => 'Serum',
+      :SChemistryBloodUreaNitrogen                      => 'Serum',
+      :SChemistryCalcium                                => 'Serum',
+      :SChemistryChloride                               => 'Serum',
+      :SChemistryCreatinine                             => 'Serum',
+      :SChemistryGammaGlutamylTransferase               => 'Serum',
+      :SChemistryGlucoseSerum                           => 'Serum',
+      :SChemistryLDH                                    => 'Serum',
+      :SChemistryMagnesium                              => 'Serum',
+      :SChemistryPhosphorous                            => 'Serum',
+      :SChemistryPotassium                              => 'Serum',
+      :SChemistrySodium                                 => 'Serum',
+      :SChemistryTotalBili                              => 'Serum',
+      :SChemistryUricAcid                               => 'Serum',
+      :SCockcroftGaulteGFR                              => 'Serum',
+      :SCorrectedCalcium                                => 'Serum',
+      :SFISHSlideStorage1                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage2                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage3                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage4                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage5                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage6                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage7                               => 'Bone Marrow Aspirate',
+      :SFISHSlideStorage8                               => 'Bone Marrow Aspirate',
+      :SAutoDiffBasophilsAbsolute                       => 'Whole Blood',
+      :SAutoDiffBasophilsPercent                        => 'Whole Blood',
+      :SAutoDiffEosinophilsAbsolute                     => 'Whole Blood',
+      :SAutoDiffEosinophilsPercent                      => 'Whole Blood',
+      :SAutoDiffLymphocytesAbsolute                     => 'Whole Blood',
+      :SAutoDiffLymphocytesPercent                      => 'Whole Blood',
+      :SAutoDiffMonocytesAbsolute                       => 'Whole Blood',
+      :SAutoDiffMonocytesPercent                        => 'Whole Blood',
+      :SAutoDiffNeutrophilsAbsolute                     => 'Whole Blood',
+      :SAutoDiffNeutrophilsPercent                      => 'Whole Blood',
+      :SDiffMorphologyCommentsDifferentialComments      => 'Whole Blood',
+      :SDiffMorphologyCommentsPlateletAssessment        => 'Whole Blood',
+      :SDiffMorphologyCommentsRBCMorphology             => 'Whole Blood',
+      :SDiffMorphologyCommentsWBCMorphology             => 'Whole Blood',
+      :SHematologyHematocrit                            => 'Whole Blood',
+      :SHematologyHemoglobin                            => 'Whole Blood',
+      :SHematologyPlateletCount                         => 'Whole Blood',
+      :SHematologyWhiteBloodCells                       => 'Whole Blood',
+      :SManualDiffBandsAbsolute                         => 'Whole Blood',
+      :SManualDiffBandsPercent                          => 'Whole Blood',
+      :SManualDiffBasophilsManualPercent                => 'Whole Blood',
+      :SManualDiffBasophilsManualAbsolute               => 'Whole Blood',
+      :SManualDiffBlastsAbsolute                        => 'Whole Blood',
+      :SManualDiffBlastsPercent                         => 'Whole Blood',
+      :SManualDiffEosinophilsManualPercent              => 'Whole Blood',
+      :SManualDiffEosinophilsManualAbsolute             => 'Whole Blood',
+      :SManualDiffLymphocytesAtypicalAbsolute           => 'Whole Blood',
+      :SManualDiffLymphocytesAtypicalPercent            => 'Whole Blood',
+      :SManualDiffLymphocytesManualPercent              => 'Whole Blood',
+      :SManualDiffLymphocytesManualAbsolute             => 'Whole Blood',
+      :SManualDiffMetamyelocytesAbsolute                => 'Whole Blood',
+      :SManualDiffMetamyelocytesPercent                 => 'Whole Blood',
+      :SManualDiffMonocytesManualPercent                => 'Whole Blood',
+      :SManualDiffMonocytesManualAbsolute               => 'Whole Blood',
+      :SManualDiffMyelocytesAbsolute                    => 'Whole Blood',
+      :SManualDiffMyelocytesPercent                     => 'Whole Blood',
+      :SManualDiffNeutrophilsManualPercent              => 'Whole Blood',
+      :SManualDiffNeutrophilsManualAbsolute             => 'Whole Blood',
+      :SManualDiffNucleatedRBCManualAbsolute            => 'Whole Blood',
+      :SManualDiffNucleatedRBCManualPercent             => 'Whole Blood',
+      :SManualDiffPlasmaCellsAbsolute                   => 'Whole Blood',
+      :SManualDiffPlasmaCellsPercent                    => 'Whole Blood',
+      :SManualDiffPromyelocytesAbsolute                 => 'Whole Blood',
+      :SManualDiffPromyelocytesPercent                  => 'Whole Blood',
+      :SCBCComments                                     => 'Whole Blood',
+      :SCBCtriggerReflexifC                             => 'Whole Blood',
+      :SCBCtriggerReflexifS                             => 'Whole Blood',
+      :SHematologySlidesReceived                        => 'Whole Blood',
+      :SIgD                                             => 'Serum',
+      :SIgE                                             => 'Serum',
+      :SLymphocytephenotypingGranulocytes               => 'Whole Blood',
+      :SLymphocytephenotypingLymphocytes                => 'Whole Blood',
+      :SLymphocytephenotypingMonocytes                  => 'Whole Blood',
+      :SLymphocytephenotypingCD19                       => 'Whole Blood',
+      :SLymphocytephenotypingCD3CD16CD56                => 'Whole Blood',
+      :SLymphocytephenotypingCD3Tube1                   => 'Whole Blood',
+      :SLymphocytephenotypingCD3CD4                     => 'Whole Blood',
+      :SLymphocytephenotypingCD3CD8                     => 'Whole Blood',
+      :SLymphocytephenotypingAbsGranulocytes            => 'Whole Blood',
+      :SLymphocytephenotypingAbsMonocytes               => 'Whole Blood',
+      :SLymphocytephenotypingAbsoluteCD3Tube1           => 'Whole Blood',
+      :SLymphocytephenotypingAbsoluteLymphocytesTube1   => 'Whole Blood',
+      :SLymphocytephenotypingCD1656Absolute             => 'Whole Blood',
+      :SLymphocytephenotypingCD19Absolute               => 'Whole Blood',
+      :SLymphocytephenotypingCD4Absolute                => 'Whole Blood',
+      :SLymphocytephenotypingCD8Absolute                => 'Whole Blood',
+      :SLymphocytephenotypingTruCOUNTBeadCountTube2     => 'Whole Blood',
+      :SLymphocytephenotypingTruCOUNTBeadsTube1         => 'Whole Blood',
+      :SLymphocytePhenotComment                         => 'Whole Blood',
+      :SMMCytogeneticsFISHAbn0CellsAmp1q21              => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHAbn0CellsDel17                => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHAbn0Cellst1416                => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHAbn0Cellst414                 => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCellsCountedAmp1q21           => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCellscountedDel17             => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCellscountedt1416             => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCellscountedt414              => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCommentAmp1q21                => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCommentDel17                  => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCommentt1416                  => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHCommentt414                   => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHResultAmp1q21                 => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHResultDel17                   => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHResultt1416                   => 'Enriched Plasma Cells',
+      :SMMCytogeneticsFISHResultt414                    => 'Enriched Plasma Cells',
+      :SEnrichedPCFISHStorage                           => 'Enriched Plasma Cells',
+      :SMRDBMASlide5                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide1                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide10                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide11                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide12                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide13                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide14                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide15                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide16                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide17                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide18                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide19                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide2                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide20                                   => 'Bone Marrow Aspirate',
+      :SMRDBMASlide3                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide4                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide6                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide7                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide8                                    => 'Bone Marrow Aspirate',
+      :SMRDBMASlide9                                    => 'Bone Marrow Aspirate',
+      :SMRDFlowResidual                                 => 'Bone Marrow Aspirate',
+      :SMRDFlowBoneMarrowSpecimenvolume                 => 'Bone Marrow Aspirate',
+      :SMRDFlowBoneMarrowTotalCellCount                 => 'Bone Marrow Aspirate',
+      :SMRDFlowBoneMarrowWhitebloodcellcount            => 'Bone Marrow Aspirate',
+      :S7AADNegative                                    => 'Bone Marrow Aspirate',
+      :SMRDFlowBMAComment                               => 'Bone Marrow Aspirate',
+      :SNmbrcellssavedforDNARNA                         => 'Bone Marrow Aspirate',
+      :SPKStorage1                                      => 'Plasma',
+      :SPKStorage110                                    => 'Plasma',
+      :SPKStorage140                                    => 'Plasma',
+      :SPKStorage2                                      => 'Plasma',
+      :SPKStorage210                                    => 'Plasma',
+      :SPKStorage240                                    => 'Plasma',
+      :SSerumFreeLightChainFreeKappaLt0Chains           => 'Serum',
+      :SSerumFreeLightChainFreeLambdaLt0Chains          => 'Serum',
+      :SSerumFreeLightChainKappaLambdaRatioSerum        => 'Serum',
+      :SSerumHCG                                        => 'Serum',
+      :SSerumHCG0                                       => 'Serum',
+      :SSPEPIFEAGRatio                                  => 'Serum',
+      :SSPEPIFEAlbumin0                                 => 'Serum',
+      :SSPEPIFEAlpha1Globulin                           => 'Serum',
+      :SSPEPIFEAlpha2Globulin                           => 'Serum',
+      :SSPEPIFEBetaGlobulin                             => 'Serum',
+      :SSPEPIFEGammaGlobulin                            => 'Serum',
+      :SSPEPIFEGlobulinTotal                            => 'Serum',
+      :SSPEPIFEImmunofixationResultSerum                => 'Serum',
+      :SSPEPIFEMSpike                                   => 'Serum',
+      :SSPEPIFETotalProtein                             => 'Serum',
+      :STetanusAntitoxoidIgG                            => 'Serum',
+      :SUrinalysisMacroscopicpH                         => 'Urine',
+      :SUrinalysisMacroscopicSpecificgravity            => 'Urine',
+      :SUrinalysisMacroscopicUABilirubin                => 'Urine',
+      :SUrinalysisMacroscopicUABlood                    => 'Urine',
+      :SUrinalysisMacroscopicUAClarityAppearance        => 'Urine',
+      :SUrinalysisMacroscopicUAColor                    => 'Urine',
+      :SUrinalysisMacroscopicUAGlucose                  => 'Urine',
+      :SUrinalysisMacroscopicUAKetones                  => 'Urine',
+      :SUrinalysisMacroscopicUALeukocyteEsterase        => 'Urine',
+      :SUrinalysisMacroscopicUANitrite                  => 'Urine',
+      :SUrinalysisMacroscopicUAUrobilinogen             => 'Urine',
+      :SUrinalysisMacroscopicUrineProtein               => 'Urine',
+      :SUrineMicroscopicAmorphousUratesorPhosphates     => 'Urine',
+      :SUrineMicroscopicBacteria                        => 'Urine',
+      :SUrineMicroscopicCalciumOxalate                  => 'Urine',
+      :SUrineMicroscopicCellularCast                    => 'Urine',
+      :SUrineMicroscopicCystine                         => 'Urine',
+      :SUrineMicroscopicFattyCast                       => 'Urine',
+      :SUrineMicroscopicGranularCast                    => 'Urine',
+      :SUrineMicroscopicHyalineCast                     => 'Urine',
+      :SUrineMicroscopicMucus                           => 'Urine',
+      :SUrineMicroscopicRBCCast                         => 'Urine',
+      :SUrineMicroscopicRBCUrine                        => 'Urine',
+      :SUrineMicroscopicRenalTubularEpithelialCells     => 'Urine',
+      :SUrineMicroscopicSperm                           => 'Urine',
+      :SUrineMicroscopicSquamousEpithelialCells         => 'Urine',
+      :SUrineMicroscopicTransitionalEpithelialCells     => 'Urine',
+      :SUrineMicroscopicTriplePhosphate                 => 'Urine',
+      :SUrineMicroscopicTyrosine                        => 'Urine',
+      :SUrineMicroscopicUAComments                      => 'Urine',
+      :SUrineMicroscopicUricAcidCrystal                 => 'Urine',
+      :SUrineMicroscopicWaxyCast                        => 'Urine',
+      :SUrineMicroscopicWBCCast                         => 'Urine',
+      :SUrineMicroscopicWBCUrine                        => 'Urine',
+      :SUrineMicroscopicYeast                           => 'Urine',
+      :SUrinalysisMacroscopicTriggerMicroscopicifABN    => 'Urine',
+      :SBMACD138DNAExtractDNAConcentration0             => 'Whole Blood',
+      :SBMACD138DNAExtractDNAExtractionDate0            => 'Whole Blood',
+      :SBMACD138DNAExtractDNAYield0                     => 'Whole Blood',
+      :SBMACD138DNAExtractPurity0                       => 'Whole Blood',
+      :SWBDNAExtractionDNAConcentration                 => 'Whole Blood',
+      :SWBDNAExtractionDNAExtractionDate                => 'Whole Blood',
+      :SWBDNAExtractionDNAYield                         => 'Whole Blood',
+      :SWBDNAExtractionPurity                           => 'Whole Blood',
+      :SOfNanoDNAAliquots                               => 'Whole Blood',
+      :SOfWBDNAAliquots                                 => 'Whole Blood',
+      :SBMACD138PreExtraction                           => 'Whole Blood',
+      :SFinalVolume                                     => 'Whole Blood',
+      :SFinalVolume0                                    => 'Whole Blood',
+      :SPSMB1                                           => 'Whole Blood',
+      :SPSMB10                                          => 'Whole Blood',
+      :SPSMB100                                         => 'Whole Blood',
+      :SWBDNAPreExtraction                              => 'Whole Blood',
+      :SWBDNAStorage1                                   => 'DNA',
+      :SWBDNAStorage2                                   => 'DNA'
+  }.freeze
+
+  SPECIMEN_DESIGNATION = {
+      :SIgDIFE                                         => 'Antibodies IgD IgE and IFE',
+      :SIgEIFE                                         => 'Antibodies IgD IgE and IFE',
+      :SIgEIgDIFEStorage                               => 'Antibodies IgD IgE and IFE',
+      :SRubeolaAntibodiesIgG                           => 'Antibodies IgG  ',
+      :SVaricellaZosterVAbIgG                          => 'Antibodies IgG  ',
+      :SIgA                                            => 'Antobodies Ig AGM',
+      :SIgG                                            => 'Antobodies Ig AGM',
+      :SIgM                                            => 'Antobodies Ig AGM',
+      :SBlockSectioningofSlidesSectioned               => 'BMA Slide',
+      :SBlockSectioningSectioningComment               => 'BMA Slide',
+      :SBlockSectioningSlideSectioningDate             => 'BMA Slide',
+      :SMRDBMASlideCaseBlock                           => 'BMA Slide',
+      :SFISHSlideStorage1                              => 'FISH Slide Storage',
+      :SFISHSlideStorage2                              => 'FISH Slide Storage',
+      :SFISHSlideStorage3                              => 'FISH Slide Storage',
+      :SFISHSlideStorage4                              => 'FISH Slide Storage',
+      :SFISHSlideStorage5                              => 'FISH Slide Storage',
+      :SFISHSlideStorage6                              => 'FISH Slide Storage',
+      :SFISHSlideStorage7                              => 'FISH Slide Storage',
+      :SFISHSlideStorage8                              => 'FISH Slide Storage',
+      :SAutoDiffBasophilsAbsolute                      => 'Hematology',
+      :SAutoDiffBasophilsPercent                       => 'Hematology',
+      :SAutoDiffEosinophilsAbsolute                    => 'Hematology',
+      :SAutoDiffEosinophilsPercent                     => 'Hematology',
+      :SAutoDiffLymphocytesAbsolute                    => 'Hematology',
+      :SAutoDiffLymphocytesPercent                     => 'Hematology',
+      :SAutoDiffMonocytesAbsolute                      => 'Hematology',
+      :SAutoDiffMonocytesPercent                       => 'Hematology',
+      :SAutoDiffNeutrophilsAbsolute                    => 'Hematology',
+      :SAutoDiffNeutrophilsPercent                     => 'Hematology',
+      :SDiffMorphologyCommentsDifferentialComments     => 'Hematology',
+      :SDiffMorphologyCommentsPlateletAssessment       => 'Hematology',
+      :SDiffMorphologyCommentsRBCMorphology            => 'Hematology',
+      :SDiffMorphologyCommentsWBCMorphology            => 'Hematology',
+      :SHematologyHematocrit                           => 'Hematology',
+      :SHematologyHemoglobin                           => 'Hematology',
+      :SHematologyPlateletCount                        => 'Hematology',
+      :SHematologyWhiteBloodCells                      => 'Hematology',
+      :SManualDiffBandsAbsolute                        => 'Hematology',
+      :SManualDiffBandsPercent                         => 'Hematology',
+      :SManualDiffBasophilsManualPercent               => 'Hematology',
+      :SManualDiffBasophilsManualAbsolute              => 'Hematology',
+      :SManualDiffBlastsAbsolute                       => 'Hematology',
+      :SManualDiffBlastsPercent                        => 'Hematology',
+      :SManualDiffEosinophilsManualPercent             => 'Hematology',
+      :SManualDiffEosinophilsManualAbsolute            => 'Hematology',
+      :SManualDiffLymphocytesAtypicalAbsolute          => 'Hematology',
+      :SManualDiffLymphocytesAtypicalPercent           => 'Hematology',
+      :SManualDiffLymphocytesManualPercent             => 'Hematology',
+      :SManualDiffLymphocytesManualAbsolute            => 'Hematology',
+      :SManualDiffMetamyelocytesAbsolute               => 'Hematology',
+      :SManualDiffMetamyelocytesPercent                => 'Hematology',
+      :SManualDiffMonocytesManualPercent               => 'Hematology',
+      :SManualDiffMonocytesManualAbsolute              => 'Hematology',
+      :SManualDiffMyelocytesAbsolute                   => 'Hematology',
+      :SManualDiffMyelocytesPercent                    => 'Hematology',
+      :SManualDiffNeutrophilsManualPercent             => 'Hematology',
+      :SManualDiffNeutrophilsManualAbsolute            => 'Hematology',
+      :SManualDiffNucleatedRBCManualAbsolute           => 'Hematology',
+      :SManualDiffNucleatedRBCManualPercent            => 'Hematology',
+      :SManualDiffPlasmaCellsAbsolute                  => 'Hematology',
+      :SManualDiffPlasmaCellsPercent                   => 'Hematology',
+      :SManualDiffPromyelocytesAbsolute                => 'Hematology',
+      :SManualDiffPromyelocytesPercent                 => 'Hematology',
+      :SCBCComments                                    => 'Hematology',
+      :SCBCtriggerReflexifC                            => 'Hematology',
+      :SCBCtriggerReflexifS                            => 'Hematology',
+      :SHematologySlidesReceived                       => 'Hematology',
+      :SIgD                                            => 'IgD',
+      :SIgE                                            => 'IgE',
+      :SLymphocytephenotypingGranulocytes              => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingLymphocytes               => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingMonocytes                 => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD19                      => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD3CD16CD56               => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD3Tube1                  => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD3CD4                    => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD3CD8                    => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingAbsGranulocytes           => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingAbsMonocytes              => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingAbsoluteCD3Tube1          => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingAbsoluteLymphocytesTube1  => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD1656Absolute            => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD19Absolute              => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD4Absolute               => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingCD8Absolute               => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingTruCOUNTBeadCountTube2    => 'Lymphocyte phenotyping',
+      :SLymphocytephenotypingTruCOUNTBeadsTube1        => 'Lymphocyte phenotyping',
+      :SLymphocytePhenotComment                        => 'Lymphocyte phenotyping',
+      :SMMCytogeneticsFISHAbn0CellsAmp1q21             => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHAbn0CellsDel17               => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHAbn0Cellst1416               => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHAbn0Cellst414                => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCellsCountedAmp1q21          => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCellscountedDel17            => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCellscountedt1416            => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCellscountedt414             => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCommentAmp1q21               => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCommentDel17                 => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCommentt1416                 => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHCommentt414                  => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHResultAmp1q21                => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHResultDel17                  => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHResultt1416                  => 'MM Cytogenetics FISH',
+      :SMMCytogeneticsFISHResultt414                   => 'MM Cytogenetics FISH',
+      :SEnrichedPCFISHStorage                          => 'MM Cytogenetics FISH',
+      :SMRDBMASlide5                                   => 'MRD BMA Slide',
+      :SMRDBMASlide1                                   => 'MRD BMA Slide',
+      :SMRDBMASlide10                                  => 'MRD BMA Slide',
+      :SMRDBMASlide11                                  => 'MRD BMA Slide',
+      :SMRDBMASlide12                                  => 'MRD BMA Slide',
+      :SMRDBMASlide13                                  => 'MRD BMA Slide',
+      :SMRDBMASlide14                                  => 'MRD BMA Slide',
+      :SMRDBMASlide15                                  => 'MRD BMA Slide',
+      :SMRDBMASlide16                                  => 'MRD BMA Slide',
+      :SMRDBMASlide17                                  => 'MRD BMA Slide',
+      :SMRDBMASlide18                                  => 'MRD BMA Slide',
+      :SMRDBMASlide19                                  => 'MRD BMA Slide',
+      :SMRDBMASlide2                                   => 'MRD BMA Slide',
+      :SMRDBMASlide20                                  => 'MRD BMA Slide',
+      :SMRDBMASlide3                                   => 'MRD BMA Slide',
+      :SMRDBMASlide4                                   => 'MRD BMA Slide',
+      :SMRDBMASlide6                                   => 'MRD BMA Slide',
+      :SMRDBMASlide7                                   => 'MRD BMA Slide',
+      :SMRDBMASlide8                                   => 'MRD BMA Slide',
+      :SMRDBMASlide9                                   => 'MRD BMA Slide',
+      :SMRDFlowResidual                                => 'MRD Flow - Residual',
+      :SMRDFlowBoneMarrowSpecimenvolume                => 'MRD Flow Bone Marrow',
+      :SMRDFlowBoneMarrowTotalCellCount                => 'MRD Flow Bone Marrow',
+      :SMRDFlowBoneMarrowWhitebloodcellcount           => 'MRD Flow Bone Marrow',
+      :S7AADNegative                                   => 'MRD Flow Bone Marrow',
+      :SMRDFlowBMAComment                              => 'MRD Flow Bone Marrow',
+      :SNmbrcellssavedforDNARNA                        => 'MRD Flow Bone Marrow',
+      :SPKStorage1                                     => 'PK',
+      :SPKStorage110                                   => 'PK',
+      :SPKStorage140                                   => 'PK',
+      :SPKStorage2                                     => 'PK',
+      :SPKStorage210                                   => 'PK',
+      :SPKStorage240                                   => 'PK',
+      :SSerumFreeLightChainFreeKappaLt0Chains          => 'Serum Free Light Chain',
+      :SSerumFreeLightChainFreeLambdaLt0Chains         => 'Serum Free Light Cin',
+      :SSerumFreeLightChainKappaLambdaRatioSerum       => 'Serum Free Light Cin',
+      :SSerumHCG                                       => 'Serum HCG',
+      :SSerumHCG0                                      => 'Serum HCG',
+      :SSPEPIFEAGRatio                                 => 'SPEP + IFE',
+      :SSPEPIFEAlbumin0                                => 'SPEP + IFE',
+      :SSPEPIFEAlpha1Globulin                          => 'SPEP + IFE',
+      :SSPEPIFEAlpha2Globulin                          => 'SPEP + IFE',
+      :SSPEPIFEBetaGlobulin                            => 'SPEP + IFE',
+      :SSPEPIFEGammaGlobulin                           => 'SPEP + IFE',
+      :SSPEPIFEGlobulinTotal                           => 'SPEP + IFE',
+      :SSPEPIFEImmunofixationResultSerum               => 'SPEP + IFE',
+      :SSPEPIFEMSpike                                  => 'SPEP + IFE',
+      :SSPEPIFETotalProtein                            => 'SPEP + IFE',
+      :STetanusAntitoxoidIgG                           => 'Tetanus Antitoxoid IgG',
+      :SBMACD138DNAExtractDNAConcentration0            => 'WB DNA Extraction',
+      :SBMACD138DNAExtractDNAExtractionDate0           => 'WB DNA Extraction',
+      :SBMACD138DNAExtractDNAYield0                    => 'WB DNA Extraction',
+      :SBMACD138DNAExtractPurity0                      => 'WB DNA Extraction',
+      :SWBDNAExtractionDNAConcentration                => 'WB DNA Extraction',
+      :SWBDNAExtractionDNAExtractionDate               => 'WB DNA Extraction',
+      :SWBDNAExtractionDNAYield                        => 'WB DNA Extraction',
+      :SWBDNAExtractionPurity                          => 'WB DNA Extraction',
+      :SOfNanoDNAAliquots                              => 'WB DNA Extraction',
+      :SOfWBDNAAliquots                                => 'WB DNA Extraction',
+      :SBMACD138PreExtraction                          => 'WB DNA Extraction',
+      :SFinalVolume                                    => 'WB DNA Extraction',
+      :SFinalVolume0                                   => 'WB DNA Extraction',
+      :SPSMB1                                          => 'WB DNA Extraction',
+      :SPSMB10                                         => 'WB DNA Extraction',
+      :SPSMB100                                        => 'WB DNA Extraction',
+      :SWBDNAPreExtraction                             => 'WB DNA Extraction',
+      :SWBDNAStorage1                                  => 'WB DNA Storage',
+      :SWBDNAStorage2                                  => 'WB DNA Storage'
+  }.freeze
+
+  SPECIMEN_DESIGNATION_DETAIL = {
+      :SFISHSlideStorage1         => 'FISH Slide Storage 1',
+      :SFISHSlideStorage2         => 'FISH Slide Storage 2',
+      :SFISHSlideStorage3         => 'FISH Slide Storage 3',
+      :SFISHSlideStorage4         => 'FISH Slide Storage 4',
+      :SFISHSlideStorage5         => 'FISH Slide Storage 5',
+      :SFISHSlideStorage6         => 'FISH Slide Storage 6',
+      :SFISHSlideStorage7         => 'FISH Slide Storage 7',
+      :SFISHSlideStorage8         => 'FISH Slide Storage 8',
+      :SHematologySlidesReceived  => 'Hematology Slide',
+      :SMRDBMASlide5              => 'MRD BMA Slide5',
+      :SMRDBMASlide1              => 'MRD BMA Slide 1',
+      :SMRDBMASlide10             => 'MRD BMA Slide 10',
+      :SMRDBMASlide11             => 'MRD BMA Slide 11',
+      :SMRDBMASlide12             => 'MRD BMA Slide 12',
+      :SMRDBMASlide13             => 'MRD BMA Slide 13',
+      :SMRDBMASlide14             => 'MRD BMA Slide 14',
+      :SMRDBMASlide15             => 'MRD BMA Slide 15',
+      :SMRDBMASlide16             => 'MRD BMA Slide 16',
+      :SMRDBMASlide17             => 'MRD BMA Slide 17',
+      :SMRDBMASlide18             => 'MRD BMA Slide 18',
+      :SMRDBMASlide19             => 'MRD BMA Slide 19',
+      :SMRDBMASlide2              => 'MRD BMA Slide 2',
+      :SMRDBMASlide20             => 'MRD BMA Slide 20',
+      :SMRDBMASlide3              => 'MRD BMA Slide 3',
+      :SMRDBMASlide4              => 'MRD BMA Slide 4',
+      :SMRDBMASlide6              => 'MRD BMA Slide 6',
+      :SMRDBMASlide7              => 'MRD BMA Slide 7',
+      :SMRDBMASlide8              => 'MRD BMA Slide 8',
+      :SMRDBMASlide9              => 'MRD BMA Slide 9',
+      :SPKStorage1                => 'PK 1',
+      :SPKStorage110              => 'PK 1',
+      :SPKStorage140              => 'PK 2',
+      :SPKStorage2                => 'PK 2',
+      :SPKStorage210              => 'PK 2',
+      :SWBDNAStorage1             => 'WB DNA Storage 1',
+      :SWBDNAStorage2             => 'WB DNA Storage 2'
   }.freeze
 
    VISIT_MAP = {
-      :C10D1        => 'Cycle 10 Day 1',
-      :C11D1        => 'Cycle 11 Day 1',
-      :C12D1        => 'Cycle 12 Day 1',
-      :C13D1        => 'Cycle 13 Day 1',
-      :C14D1        => 'Cycle 14 Day 1',
-      :C15D1        => 'Cycle 15 Day 1',
-      :C16D1        => 'Cycle 16 Day 1',
-      :C17D1        => 'Cycle 17 Day 1',
-      :C18D1        => 'Cycle 18 Day 1',
-      :C19D1        => 'Cycle 19 Day 1',
-      :C1D1         => 'Cycle 1 Day 1',
-      :C1D14        => 'Cycle 1 Day 14',
-      :C1D21        => 'Cycle 1 Day 21',
-      :C1D7         => 'Cycle 1 Day 7',
-      :C20D1        => 'Cycle 20 Day 1',
-      :C21D1        => 'Cycle 21 Day 1',
-      :C22D1        => 'Cycle 22 Day 1',
-      :C23D1        => 'Cycle 23 Day 1',
-      :C24D1        => 'Cycle 24 Day 1',
-      :C25D1        => 'Cycle 25 Day 1',
-      :C26D1        => 'Cycle 26 Day 1',
-      :C27D1        => 'Cycle 27 Day 1',
-      :C28D1        => 'Cycle 28 Day 1',
-      :C29D1        => 'Cycle 29 Day 1',
-      :C2D1         => 'Cycle 2 Day 1',
-      :C2D14        => 'Cycle 2 Day 14',
-      :C2D21        => 'Cycle 2 Day 21',
-      :C2D7         => 'Cycle 2 Day 7',
-      :C30D1        => 'Cycle 30 Day 1',
-      :C31D1        => 'Cycle 31 Day 1',
-      :C32D1        => 'Cycle 32 Day 1',
-      :C33D1        => 'Cycle 33 Day 1',
-      :C34D1        => 'Cycle 34 Day 1',
-      :C35D1        => 'Cycle 35 Day 1',
-      :C36D1        => 'Cycle 36 Day 1',
-      :C37D1        => 'Cycle 37 Day 1',
-      :C3D1         => 'Cycle 3 Day 1',
-      :C3D14        => 'Cycle 3 Day 14',
-      :C4D1         => 'Cycle 4 Day 1',
-      :C5D1         => 'Cycle 5 Day 1',
-      :C6D1         => 'Cycle 6 Day 1',
-      :C7D1         => 'Cycle 7 Day 1',
-      :C8D1         => 'Cycle 8 Day 1',
-      :C9D1         => 'Cycle 9 Day 1',
-      :EOT          => 'End of Treatment',
-      :FollowUpPFS  => 'Progressive-free Survival PFS',
-      :MRDKit       => 'MRD Panel',
-      :RelapseBMA   => 'Relapse BMA',
-      :Screening    => 'Screening',
-      :ScreeningBMA => 'Screening BMA',
-      :Unscheduled  => 'Unscheduled',
+        :C10D1        => 'Cycle 10 Day 1',
+        :C11D1        => 'Cycle 11 Day 1',
+        :C12D1        => 'Cycle 12 Day 1',
+        :C13D1        => 'Cycle 13 Day 1',
+        :C14D1        => 'Cycle 14 Day 1',
+        :C15D1        => 'Cycle 15 Day 1',
+        :C1D1         => 'Cycle 1 Day 1',
+        :C1D15        => 'Cycle 15 Day 15',
+        :C1D8         => 'Cycle 1 Day 8',
+        :C2D1         => 'Cycle 2 Day 1',
+        :C2D8         => 'Cycle 2 Day 8',
+        :C3D1         => 'Cycle 3 Day 1',
+        :C4D1         => 'Cycle 4 Day 1',
+        :C5D1         => 'Cycle 5 Day 1',
+        :C5D8         => 'Cycle 5 Day 1',
+        :C6D1         => 'Cycle 6 Day 1',
+        :C7D1         => 'Cycle 7 Day 1',
+        :C8D1         => 'Cycle 8 Day 1',
+        :C9D1         => 'Cycle 9 Day 1',
+        :CR           => 'Complete Response',
+        :EOT          => 'End of Treatment',
+        :FollowupPD   => 'Progressive Disease (PD)',
+        :FollowupPFS  => 'Progression-Free Survival 2 (PFS2)',
+        :PreScreening => 'Pre-screening',
+        :Screening    => 'Screening',
+        :Unscheduled  => 'Unscheduled'
   }.freeze
 
   def initialize(logger)
@@ -741,27 +1135,14 @@ class C16021_Inv
   def processor(this_connection)
     @logger.info "#{self.class.name} processor start'"
 
-    my_select = "SELECT   MAX(dsv.id),
-                          dsv.site_number,
-                          dsv.subject_code,
-                          dsv.treatment,
-                          dsv.arm
-                 FROM     dts_subject_v1_0 dsv
-                 WHERE    dsv.study_protocol_id = 'C16014'
-                 GROUP BY dsv.site_number,
-                          dsv.subject_code;"
-
-    @my_subjects = this_connection.query(my_select)
-
     @processing_lines = Array.new
     lines = 0
 
-    @inbound_lines.each do |specline|
-      if specline[10].nil?                 ||
-         specline[10] == ''                ||
-         specline[19].strip == 'Cancelled' ||
-         specline[19].strip == 'Assigned'  ||
-         specline[18].strip == 'Temp Tale Storage'
+    @inbound_lines.each do |specline|                        # Ignore lines with ...
+      if specline[9].nil?                  ||                # Empty tube number
+         specline[9].strip  == ''          ||                # Missing tube number
+         specline[20].strip == 'Cancelled' ||                # Cancelled testing status (tube never arrived)
+         specline[20].strip == 'Assigned'                    # Assigned testing status (tube has not arrived yet)
         next
       end
 
@@ -769,12 +1150,12 @@ class C16021_Inv
       @processing_lines.each do |distinct_line|
 
         # see if we actually need the line in the file
-        if (specline[0]  == distinct_line[0])  &&     # Accession Number
-           (specline[10] == distinct_line[10])        # Tube Number
+        if (specline[0] == distinct_line[0])  &&     # Accession Number
+           (specline[9] == distinct_line[9])         # Tube Number
           found = true
 
-          if !specline[20].nil? && specline[20][0..4] == 'Check'
-            distinct_line[20] = specline[20]
+          if !specline[21].nil? && specline[21][0..4] == 'Check'
+            distinct_line[21] = specline[21]
           end
 
           break
@@ -802,198 +1183,255 @@ class C16021_Inv
 
     @processing_lines.each do |outline|
 
-      treatment           = 'MLN9708'
-      arm                 = 'MLN9708 or Placebo'
-      date_of_birth       = (outline[5].nil?)  ? ' NULL,' : "STR_TO_DATE(#{outline[5].insert(-3, '19').insert_value} '%e-%b-%Y'),"
-      visit               = VISIT_MAP[(outline[15].gsub(/[^a-zA-Z0-9]/, '')).to_sym]
-      specimen_type       = SPECIMEN_TYPE[(((outline[17].nil? ? '' : outline[17]) + (outline[18].nil? ? '' : outline[18])).gsub(/[^a-zA-Z0-9]/, '')).to_sym]
-      receive_date        = (outline[14].nil?)  ? ' NULL,' : " STR_TO_DATE(#{outline[14].insert_value} '%c/%e/%Y %T'),"
-      specimen_barcode    = outline[0] + '-' + outline[10].rjust(2,'0')
+      treatment           = 'Ixazomib'
+      arm                 = 'Ixazomib or Placebo'
+      date_of_birth       = (outline[6].nil?)  ? ' NULL,' : "STR_TO_DATE(#{outline[6].insert(-3, '19').insert_value} '%e-%b-%Y'),"
+      visit               = VISIT_MAP[(outline[16].gsub(/[^a-zA-Z0-9]/, '')).to_sym]
+      specimen_testname   = outline[19].nil? ? '' : outline[19].gsub(/[.]/,'0')
+      specimen_type       = SPECIMEN_TYPE[('S'+(((outline[18].nil? ? '' : outline[18]) + specimen_testname).gsub(/[^a-zA-Z0-9]/, ''))).to_sym]
+      specimen_designation= SPECIMEN_DESIGNATION[('S'+(((outline[18].nil? ? '' : outline[18]) + specimen_testname).gsub(/[^a-zA-Z0-9]/, ''))).to_sym]
+      specimen_ddetals    = SPECIMEN_DESIGNATION_DETAIL[('S'+(((outline[18].nil? ? '' : outline[18]) + specimen_testname).gsub(/[^a-zA-Z0-9]/, ''))).to_sym]
+      receive_date        = (outline[15].nil?)  ? ' NULL,' : " STR_TO_DATE(#{outline[15].insert_value} '%c/%e/%Y %T'),"
+      specimen_barcode    = outline[0] + '-' + outline[9].rjust(2,'0')
       specimen_hub        = SPECIMEN_HUB[(outline[3].gsub(/[^a-zA-Z0-9]/, '')).to_sym]
-      specimen_status     = "Exhausted"
+      specimen_status     = 'Exhausted'
       specimen_location   = specimen_hub
       specimen_is_child   = 'No'
-      specimen_parent     = 'NULL'
+      specimen_parent     = 'NULL,'
 
 # Figure our lineage
 
-      parent_offset       = PARENT_OFFSET[(((outline[17].nil? ? '' : outline[17]) + (outline[18].nil? ? '' : outline[18])).gsub(/[^a-zA-Z0-9]/, '')).to_sym]
-
-      if !parent_offset.nil?
+      if !outline[11].nil?
         specimen_is_child = 'Yes'
-        parent_tube       = outline[10].to_i + parent_offset
-        specimen_parent   = outline[0] + '-' + parent_tube.to_s.rjust(2, '0')
-     end
+        specimen_parent   = (outline[0] + '-' + outline[11].rjust(2,'0')).insert_value
+      end
 
 # set specimen status and vendor code base upon visit and tube mapping.
 
       case visit
-        when 'Screening'
-          case outline[10]
-            when '1'
-            when '11', '12', '13', '14'
-              if !outline[20].nil? && outline[20][0..8] == "Check Out"
-                specimen_location = 'SYNC'
-              end
-              specimen_status   = 'In Storage'
-            when '16', '17'
-              if !outline[20].nil? && outline[20][0..8] == 'Check Out'
-                specimen_location = 'ITEK'
-              end
-              specimen_status   = 'In Storage'
-            when '26'
-              specimen_location = 'LCUS'
-              specimen_status   = 'Exhausted'
-            when '27', '28'
-              if !outline[20].nil? && outline[20][0..8] == 'Check Out'
-                specimen_location = 'BRIN'
-                specimen_status   = 'In Storage'
-              end
-
-              if !outline[20].nil? && outline[20][0..7] == 'Check In'
-                specimen_location = 'LCUS'
-                specimen_status   = 'In Storage'
-              end
-            else
-              specimen_location = "UNKNOWN TUBE #{outline[10]}"
-              @logger.error "0 Tube ->#{outline[10]}<- not known for visit ->#{visit}<-."
-          end
-        when 'Screening BMA',
-             'Relapse BMA'
-          case outline[10]
-            when '1'
-            when '2', '4'
-              specimen_location = 'LCUS'
-            when '3'
-              specimen_location = 'LCRT'
-              specimen_status   = 'In Storage'
-            when '5', '6', '7', '8'
-              if !outline[20].nil? && outline[20][0..7] == 'Check In'
-                specimen_location = 'LCUS'
-                specimen_status   = 'In Storage'
-              end
-              if !outline[20].nil? && outline[20][0..7] == 'Check Out'
-                specimen_location = 'BRIN'
-                specimen_status   = 'In Storage'
-              end
-            else
-              specimen_location = "UNKNOWN TUBE #{outline[10]}"
-              @logger.error "1 Tube ->#{outline[10]}<- not known for visit ->#{visit}<-."
-          end
-        when 'Cycle 1 Day 7',
-             'Cycle 1 Day 14',
-             'Cycle 1 Day 21',
-             'Cycle 2 Day 7',
-             'Cycle 2 Day 14',
-             'Cycle 2 Day 21',
-             'Cycle 3 Day 14',
-             'Cycle 9 Day 1',
-             'Cycle 10 Day 1',
-             'Cycle 13 Day 1',
-             'Cycle 14 Day 1',
-             'Cycle 15 Day 1',
-             'Cycle 16 Day 1',
-             'Cycle 17 Day 1',
-             'Cycle 19 Day 1',
-             'Cycle 20 Day 1',
-             'Cycle 21 Day 1',
-             'Cycle 22 Day 1',
-             'Cycle 25 Day 1',
-             'Cycle 26 Day 1',
-             'Cycle 27 Day 1',
-             'Cycle 28 Day 1',
-             'Cycle 29 Day 1',
-             'Cycle 30 Day 1',
-             'Cycle 31 Day 1',
-             'Cycle 32 Day 1',
-             'Cycle 33 Day 1',
-             'Cycle 34 Day 1',
-             'Cycle 35 Day 1',
-             'Cycle 36 Day 1',
-             'Cycle 37 Day 1'
-           case outline[10]
-             when '1', '7'
-             else
-               specimen_location = "UNKNOWN TUBE #{outline[10]}"
-               @logger.error "2 Tube ->#{outline[10]}<- not known for visit ->#{visit}<-."
-           end
-        when 'Cycle 1 Day 1',
+        when 'Cycle 10 Day 1',
              'Cycle 2 Day 1',
              'Cycle 3 Day 1',
              'Cycle 4 Day 1',
              'Cycle 5 Day 1',
              'Cycle 6 Day 1',
-             'Cycle 7 Day 1',
              'Cycle 8 Day 1',
-             'Cycle 11 Day 1',
-             'Cycle 12 Day 1',
-             'Cycle 18 Day 1',
-             'Cycle 23 Day 1',
-             'Cycle 24 Day 1',
-             'End of Treatment',
-             'Progressive-free Survival PFS'
-          case outline[10]
-            when '1'
-            when '7', '8', '9', '10', '11', '12', '13', '14'
-              if !outline[20].nil? && outline[20][0..8] == "Check Out"
+             'Cycle 9 Day 1'
+          case outline[9]
+            when '1', '2', '4', '5', '6', '7', '15', '17', '18', '26', '27', '47'                    #default
+            when '27', '26'
+              if !outline[21].nil? && outline[21][0..8] == 'Check Out'
                 specimen_location = 'SYNC'
+              end
+              specimen_status   = 'In Storage'
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Cycle 11 Day 1',
+             'Cycle 12 Day 1',
+             'Cycle 14 Day 1',
+             'Cycle 15 Day 1',
+             'Progressive Disease (PD)'
+          case outline[9]
+            when '1', '2', '4', '5', '6', '7', '15', '17', '18', '47'                               #default
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Cycle 1 Day 1'
+          case outline[9]
+            when '1', '2', '4', '5', '7', '8', '15', '17', '18', '47'                                     #default
+            when '26', '27', '28', '29', '30'
+               specimen_location = 'LCUS'
+               if !outline[18].nil? && !outline[20].nil? && outline[20][0..8] == "Check Out"
+                 specimen_location = 'QPS'
+               end
+               specimen_status   = 'In Storage'
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Cycle 13 Day 1'
+          case outline[9]
+            when '1', '2', '4', '5', '6', '7', '11', '12', '13', '15', '17', '18', '24', '47'       #default
+            when '25'
+              specimen_location = 'LCUS'
+              if !outline[18].nil? && !outline[20].nil? && outline[20][0..8] == "Check Out"
+                specimen_location = 'ADPT'
+              end
+              specimen_status   = 'In Storage'
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+            end
+        when 'Cycle 1 Day 15',
+             'Cycle 1 Day 8',
+             'Cycle 2 Day 8',
+             'Cycle 5 Day 8'
+          case outline[9]
+            when '1', '2'                                                                           #default
+            when '26', '27'
+              specimen_location = 'LCUS'
+              if !outline[18].nil? && !outline[20].nil? && outline[20][0..8] == "Check Out"
+                specimen_location = 'QPS'
               end
               specimen_status   = 'In Storage'
             else
               specimen_location = "UNKNOWN TUBE #{outline[10]}"
-              @logger.error "3 Tube ->#{outline[10]}<- not known for visit ->#{visit}<-."
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
           end
-        when 'MRD Panel'
-           case outline[10]
-             when '3'
-             else
-               puts 'AND Here ... bummer'
-               specimen_location = "UNKNOWN TUBE #{outline[10]}"
-               @logger.error "4 Tube ->#{outline[10]}<- not known for visit ->#{visit}<-."
-           end
-        when 'Unscheduled'
-          case outline[10]
-            when '1', '18', '19', '46'
-            when '2', '4', '21'
+        when 'Cycle 7 Day 1',
+             'Progression-Free Survival 2 (PFS2)'
+          case outline[9]
+            when '1', '2', '4', '5', '7', '11', '12', '13', '15', '17', '18', '47'                  #default
+            when '26', '27'
               specimen_location = 'LCUS'
-            when '5', '6', '7', '8'
-              specimen_status = 'In Storage'
-              if (outline[20].strip)[-4..-1] == 'RNA,'
-                specimen_location = 'BRIN'
-              else
-                if !outline[20].nil? && outline[20][0..7] == 'Check In'
-                  specimen_location = 'LCUS'
-                end
-                if !outline[20].nil? && outline[20][0..7] == 'Check Out'
-                  specimen_location = 'SYNC'
-                end
+              if !outline[18].nil? && !outline[20].nil? && outline[20][0..8] == "Check Out"
+                specimen_location = 'QPS'
               end
-            when '9', '10', '11', '12', '13', '14'
-              specimen_status = 'In Storage'
-              if !outline[20].nil? && outline[20][0..7] == 'Check Out'
-                specimen_location = 'SYNC'
-              end
-            when '16', '17'
-              specimen_status = 'In Storage'
-              if !outline[20].nil? && outline[20][0..7] == 'Check Out'
-                specimen_location = 'ITEK'
-              end
-            when '26'
-              specimen_location = 'LCUS'
-              specimen_status   = 'Exhausted'
-            when '27', '28'
-              if !outline[20].nil? && outline[20][0..8] == 'Check Out'
-                specimen_location = 'BRIN'
-                specimen_status   = 'In Storage'
-              end
-
-              if !outline[20].nil? && outline[20][0..7] == 'Check In'
-                specimen_location = 'LCUS'
+              specimen_status   = 'In Storage'
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
                 specimen_status   = 'In Storage'
               end
             else
               specimen_location = "UNKNOWN TUBE #{outline[10]}"
-              @logger.error "5 Tube ->#{outline[10]}<- not known for visit ->#{visit}<-."
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Complete Response'
+          case outline[9]
+            when '1'                                                                              #default
+            when '2'
+              specimen_location = 'LCUS'
+              if !outline[18].nil? && !outline[20].nil? && outline[20][0..8] == "Check Out"
+                specimen_location = 'ADPT'
+              end
+              specimen_status   = 'In Storage'
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'End of Treatment'
+          case outline[9]
+            when '1', '2', '4', '5', '7', '11', '12', '13', '15', '17', '18', '24', '31', '47'                                     #default
+            when '34'
+              specimen_location = 'LCUS'
+              if !outline[18].nil? && !outline[20].nil? && outline[20][0..7] == "Check In"
+                specimen_status = 'In Storage'
+              end
+            when '35'
+              specimen_location = 'LCUS'
+              if !outline[18].nil? && !outline[20].nil? && outline[20][0..8] == "Check Out"
+                specimen_location = 'ADPT'
+              end
+              specimen_status  = 'In Storage'
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Pre-screening'
+          case outline[9]
+            when '1'
+            when '3', '4', '5', '6', '7', '8', '9', '10'                   #default
+              if !outline[21].nil? && outline[21][0..8] == 'Check Out'
+                specimen_location = 'ADPT'
+              end
+              specimen_status   = 'In Storage'
+            when '2'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Screening'
+          case outline[9]
+            when '1', '2', '4', '5', '7', '8', '9', '11', '12', '13', '15', '17', '18', '24', '47'    #default
+            when '22', '23'
+              if !outline[21].nil? && outline[21][0..8] == 'Check Out'
+                specimen_location = 'BRIT'
+              else
+                specimen_location = 'LCUS'
+              end
+              specimen_status   = 'In Storage'
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            when '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40',
+                  '41', '42', '43', '44', '45', '46'
+              #default
+              if !outline[21].nil? && outline[21][0..8] == 'Check Out'
+                specimen_location = 'ADPT'
+              else
+                specimen_location = 'LCRT'
+              end
+              specimen_status   = 'In Storage'
+            when '21'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
+          end
+        when 'Unscheduled'
+          case outline[9]
+            when '1', '4', '5', '7', '9', '11', '12', '13', '15', '17', '18', '24', '47', '97'
+            when '2'
+              if specimen_type == 'Enriched Plasma Cells'
+                specimen_status = 'In Storage'
+              end
+            when '2'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            when '6'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            when '21'
+              specimen_location = 'LCUS'
+              if !outline[21].nil? && outline[21][0..7] == 'Check In'
+                specimen_status   = 'In Storage'
+              end
+            when '22', '23'
+              specimen_status   = 'In Storage'
+              if outline[21].nil? && outline[21][0..8] == 'Check Out'
+                specimen_location = 'BRIT'
+              else
+                specimen_location = 'LCUS'
+              end
+            when '26', '27'
+              specimen_status   = 'In Storage'
+              if outline[21].nil? && outline[21][0..8] == 'Check Out'
+                specimen_location = 'QPS'
+              end
+            else
+              specimen_location = "UNKNOWN TUBE #{outline[10]}"
+              @logger.error "0 Tube ->#{outline[9]}<- not known for visit ->#{visit}<-."
           end
         else
           specimen_location = "UNKNOWN VISIT #{visit}"
@@ -1004,10 +1442,10 @@ class C16021_Inv
               "('C16021',"                                               + # study_protocol_id
               " #{outline[2].rjust(5, '0').insert_value}"                + # site_number
               " #{outline[4].insert_value}"                              + # subject_code
-              " #{outline[6].insert_value}"                              + # subject_gender
+              " #{outline[7].insert_value}"                              + # subject_gender
               " #{date_of_birth}"                                        + # subject_DOB
-              " STR_TO_DATE(#{outline[7].insert_value} '%c/%e/%Y %T'),"  + # specimen_collect_date
-              " STR_TO_DATE(#{outline[7].insert_value} '%c/%e/%Y %T'),"  + # specimen_collect_time
+              " STR_TO_DATE(#{outline[8].insert_value} '%c/%e/%Y %H:%i'),"  + # specimen_collect_date
+              " STR_TO_DATE(#{outline[8].insert_value} '%c/%e/%Y %H:%i'),"  + # specimen_collect_time
               " #{receive_date}"                                         + # specimen_receive_datetime
               " #{treatment.insert_value}"                               + # treatment
               " #{arm.insert_value}"                                     + # arm
@@ -1016,13 +1454,13 @@ class C16021_Inv
               " #{specimen_barcode.insert_value}"                        + # specimen_identifier
               " #{specimen_type.insert_value}"                           + # specimen_type
               " #{specimen_barcode.insert_value}"                        + # specimen_name
-              ' NULL,'                                                   + # specimen_designation,
-              ' NULL,'                                                   + # specimen_designation_detaill
-              " #{specimen_parent.insert_value}"                         + # specimen_parent
+              " #{specimen_designation.insert_value}"                    + # specimen_designation,
+              " #{specimen_ddetals.insert_value}"                        + # specimen_designation_details
+              " #{specimen_parent}"                                      + # specimen_parent
               " #{specimen_is_child.insert_value}"                       + # specimen_ischild
               ' NULL,'                                                   + # specimen_condition
               " #{specimen_status.insert_value}"                         + # specimen_status
-              " #{outline[26].insert_value}"                             + # specimen_comment
+              " #{outline[23].insert_value}"                             + # specimen_comment
               ' NULL,'                                                   + # shipped_date
               " #{specimen_location.insert_value}"                       + # shipped_location
               ' NULL,'                                                   + # testing_description
