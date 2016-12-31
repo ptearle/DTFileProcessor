@@ -36,6 +36,11 @@ require_relative 'P_1012'
 # BMS FRACTION
 require_relative 'ca018001'
 
+#Covance
+require_relative 'master_assay'
+require_relative 'D5136C00008'
+require_relative 'D4910C00009'
+
 class DT_File
 
   def initialize (vendor, client, protocol, file_type, file_version, mode, filer, logger)
@@ -227,7 +232,86 @@ class DT_Transfers
               ICF_withdrawl_date,
 			        vendor_code
              ) VALUES',
-    }.freeze
+      :ASSAYGROUPDEF_V1_0 =>
+          '
+           INSERT INTO assay_groups
+            (name, version
+            ) VALUES',
+      :ASSAYGROUPDEF_V1_0_P2 =>
+          'ON DUPLICATE KEY UPDATE
+             assay_groups.version = VALUES(assay_groups.version);',
+      :ASSAYDEF_V1_0 =>
+          '
+           INSERT INTO assays
+            (code,
+             name,
+             status,
+             vendor_id,
+             master_program_id
+            ) VALUES',
+      :ASSAYDEF_V1_0_P2 =>
+          'ON DUPLICATE KEY UPDATE
+             assays.name              = VALUES(assays.name),
+             assays.status            = VALUES(assays.status),
+             assays.vendor_id         = VALUES(assays.vendor_id),
+             assays.master_program_id = VALUES(assays.master_program_id)
+            ;',
+      :ASSAYGROUPASSAYDEF_V1_0 =>
+          '
+           INSERT INTO assay_groups_assays
+            (assay_groups_assays.assay_id,
+             assay_groups_assays.assay_group_id
+            ) VALUES',
+      :ASSAYGROUPASSAYDEF_V1_0_P2 =>
+          '  ON DUPLICATE KEY UPDATE
+             assay_groups_assays.assay_group_id = VALUES(assay_groups_assays.assay_group_id);',
+      :ASSAYDEF2_V1_0 =>
+          '
+           INSERT INTO assays
+            (code,
+             methodology,
+             assay_matrix
+            ) VALUES',
+      :ASSAYDEF2_V1_0_P2 =>
+          'ON DUPLICATE KEY UPDATE
+             assays.methodology       = VALUES(assays.methodology),
+             assays.assay_matrix      = VALUES(assays.assay_matrix)
+            ;',
+      :ASSAYDEF3_V1_0 =>
+          '
+           INSERT INTO assays
+            (code,
+             assay_details
+            ) VALUES',
+      :ASSAYDEF3_V1_0_P2 =>
+          'ON DUPLICATE KEY UPDATE
+             assays.assay_details      = VALUES(assays.assay_details)
+            ;',
+      :ASSAYDEF4_V1_0 =>
+          '
+           INSERT INTO assays
+            (code,
+             sample_storage_conditions
+            ) VALUES',
+      :ASSAYDEF4_V1_0_P2 =>
+          'ON DUPLICATE KEY UPDATE
+             assays.sample_storage_conditions      = VALUES(assays.sample_storage_conditions)
+            ;',
+      :ASSAYDEF5_V1_0 =>
+          '
+           INSERT INTO assays
+            (code,
+             equipment_used,
+             volume_of_matrix,
+             volume_unit
+            ) VALUES',
+      :ASSAYDEF5_V1_0_P2 =>
+          'ON DUPLICATE KEY UPDATE
+             assays.equipment_used    = VALUES(assays.equipment_used),
+             assays.volume_of_matrix  = VALUES(assays.volume_of_matrix),
+             assays.volume_unit       = VALUES(assays.volume_unit)
+            ;',
+  }.freeze
 
   def initialize(logger)
     @transfers = Array.new
@@ -1065,27 +1149,107 @@ class DT_Transfers
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
-                              'P-1012',
+                              'MLN4924-P1012',
                               'SITE',
                               'V1_0',
                               'CUMULATIVE',
-                              P_1012_site.new(logger),
+                              MLN4924_P1012_site.new(logger),
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
-                              'P-1012',
+                              'MLN4924-P1012',
                               'SUBJECT',
                               'V1_0',
                               'CUMULATIVE',
-                              P_1012_subject.new(logger),
+                              MLN4924_P1012_subject.new(logger),
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
-                              'P-1012',
+                              'MLN4924-P1012',
                               'INVENTORY',
                               'V1_0',
                               'CUMULATIVE',
-                              P_1012_Inv.new(logger),
+                              MLN4924_P1012_Inv.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D5136C00008',
+                              'ASSAYGROUPDEF',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D5136C00008_AssayGrp.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D5136C00008',
+                              'ASSAYDEF',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D5136C00008_AssayDef.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D5136C00008',
+                              'ASSAYGROUPASSAYDEF',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D5136C00008_AssayGrpAssayDef.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'ASSAYGROUPDEF',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D4910C00009_AssayGrp.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'ASSAYDEF',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D4910C00009_AssayDef.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'ASSAYGROUPASSAYDEF',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D4910C00009_AssayGrpAssayDef.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'MASTERASSAY',
+                              'ASSAYDEF2',
+                              'V1_0',
+                              'CUMULATIVE',
+                              MasterAssay_AssayDef2.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'MASTERASSAY',
+                              'ASSAYDEF3',
+                              'V1_0',
+                              'CUMULATIVE',
+                              MasterAssay_AssayDef3.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'MASTERASSAY',
+                              'ASSAYDEF4',
+                              'V1_0',
+                              'CUMULATIVE',
+                              MasterAssay_AssayDef4.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'MASTERASSAY',
+                              'ASSAYDEF5',
+                              'V1_0',
+                              'CUMULATIVE',
+                              MasterAssay_AssayDef5.new(logger),
                               logger)
 
     @my_connections = DT_Connections.new(logger)
@@ -1170,6 +1334,17 @@ class DT_Transfers
 
         value_frame = value_clauses.slice!(0, (value_clauses.count < INSERT_FRAME) ? value_clauses.count : INSERT_FRAME)
         insert_statement = insert_clause + value_frame.join(",\n")
+
+        if (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYGROUPDEF_V1_0'      or
+           (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYDEF_V1_0'           or
+           (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYGROUPASSAYDEF_V1_0' or
+           (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYDEF2_V1_0'          or
+           (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYDEF3_V1_0'          or
+           (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYDEF4_V1_0'          or
+           (this_transfer.file_type+'_'+this_transfer.file_version) == 'ASSAYDEF5_V1_0'
+
+          insert_statement << INSERT_STATEMENTS[(this_transfer.file_type+'_'+this_transfer.file_version+'_P2').to_sym]
+        end
 
         @logger.debug "#{insert_statement}"
 

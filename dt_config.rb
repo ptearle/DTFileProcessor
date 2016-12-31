@@ -121,7 +121,18 @@ class DT_Connections
                               '2s4t6wp3J2PJgW7QAhrD',
                               '13306',
                               'gss-uat'
-    )
+                             )
+
+    @systems << DB_Config.new('Covance',
+                              'CL100',
+                              'TEST',
+                              'demo.cluster-c4phvzpqkgwp.us-east-1.rds.amazonaws.com',
+                              'root',
+                              '2s4t6wp3J2PJgW7QAhrD',
+                              '13306',
+                              'cl100-qa'
+                             )
+
   end
 
   def length

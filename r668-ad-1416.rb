@@ -217,11 +217,15 @@ class R668_AD_1416_RGRNInv
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y'),"    + # specimen_collect_date
               " STR_TO_DATE(#{outline[12].insert_value} '%c/%e/%Y %T')," + # specimen_collect_time
               " STR_TO_DATE(#{outline[17].insert_value} '%c/%e/%Y %T')," + # specimen_receive_datetime
+              ' NULL,'                                                   + # treatment
+              ' NULL,'                                                   + # arm
               " #{VISIT_MAP[('V' + outline[7]).to_sym].insert_value}"    + # visit_name
-              " #{outline[3].insert_value}"                              + # specimen_barcode
+              " #{outline[15].insert_value}"                             + # specimen_barcode
               " #{outline[4].insert_value}"                              + # specimen_identifier
               " #{SPECIMEN_TYPE[outline[11].strip].insert_value}"        + # specimen_type
               " #{outline[10].insert_value}"                             + # specimen_name
+              ' NULL,'                                                   + # specimen_designation
+              ' NULL,'                                                   + # specimen_designation_detail
               ' NULL,'                                                   + # specimen_parent
               " 'N',"                                                    + # specimen_ischild
               " #{outline[13].insert_value}"                             + # specimen_condition
