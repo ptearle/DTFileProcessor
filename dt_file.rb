@@ -76,7 +76,7 @@ class DT_Transfers
     DIR_SEPARATOR = '/'
   end
 
-  INSERT_FRAME = 9000
+  INSERT_FRAME = 7000
   INSERT_STATEMENTS = {
       :INVENTORY_V1_0 =>
           '
@@ -107,6 +107,56 @@ class DT_Transfers
               shipped_location,
               testing_description,
               vendor_code
+             ) VALUES',
+      :CLINVENTORY_V1_0 =>
+          '
+           INSERT INTO dts_specimen_inventory_v1_0
+             (  study_protocol_id,
+                study_protocol_version,
+                site_number,
+                collection_site_country,
+                date_departed_site,
+                subject_num,
+                subject_gender,
+                subject_date_of_birth,
+                subject_race,
+                subject_ethnicity,
+                subject_enrollment_status,
+                specimen_collect_date,
+                specimen_collect_time,
+                received_datetime,
+                treatment,
+                arm,
+                visit_name,
+                visit_date,
+                visit_day,
+                visit_week,
+                visit_timepoint,
+                specimen_barcode,
+                specimen_identifier,
+                specimen_type,
+                specimen_name,
+                specimen_volume,
+                specimen_volume_units,
+                specimen_mass,
+                specimen_mass_units,
+                specimen_designation,
+                specimen_designation_detail,
+                specimen_collection_tube_type,
+                specimen_quality,
+                specimen_parent_id,
+                specimen_ischild,
+                specimen_child_type,
+                specimen_condition,
+                specimen_status,
+                specimen_comment,
+                shipped_date,
+                shipped_location,
+                storage_vendor,
+                storage_facility_name,
+                storage_location,
+                testing_description,
+                vendor_code
              ) VALUES',
       :ASSAY_V1_0 =>
           '
@@ -153,6 +203,30 @@ class DT_Transfers
               sensitivity,
               assay_status,
               test_type,
+              vendor_code
+             ) VALUES',
+      :CLASSAY_V1_1 =>
+          '
+           INSERT INTO dts_assay_results_v1_1
+             (study_protocol_id,
+              assay_protocol_id,
+              assay_protocol_version,
+              assay_name,
+              assay_code,
+              subject_number,
+              specimen_collect_date,
+              visit_name,
+              lab_barcode,
+              analysis_barcode,
+              assay_date,
+              result_categorical,
+              result_numeric,
+              result_type,
+              result_units,
+              assay_batch_id,
+              assay_run_id,
+              result_flag,
+              result_comment,
               vendor_code
              ) VALUES',
       :SITE_V1_0 =>
@@ -269,11 +343,13 @@ class DT_Transfers
           '
            INSERT INTO assays
             (code,
+             analyte,
              methodology,
              assay_matrix
             ) VALUES',
       :ASSAYDEF2_V1_0_P2 =>
           'ON DUPLICATE KEY UPDATE
+             assays.analyte           = VALUES(assays.analyte),
              assays.methodology       = VALUES(assays.methodology),
              assays.assay_matrix      = VALUES(assays.assay_matrix)
             ;',
@@ -1197,6 +1273,38 @@ class DT_Transfers
                               logger)
     @transfers << DT_File.new('CVD',
                               'Covance',
+                              'D5136C00008',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D5136C00008_Site.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D5136C00008',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D5136C00008_Subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D5136C00008',
+                              'CLINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D5136C00008_Inventory.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D5136C00008',
+                              'CLASSAY',
+                              'V1_1',
+                              'CUMULATIVE',
+                              D5136C00008_Assay.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
                               'D4910C00009',
                               'ASSAYGROUPDEF',
                               'V1_0',
@@ -1218,6 +1326,38 @@ class DT_Transfers
                               'V1_0',
                               'CUMULATIVE',
                               D4910C00009_AssayGrpAssayDef.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D4910C00009_Site.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D4910C00009_Subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'CLINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              D4910C00009_Inventory.new(logger),
+                              logger)
+    @transfers << DT_File.new('CVD',
+                              'Covance',
+                              'D4910C00009',
+                              'CLASSAY',
+                              'V1_1',
+                              'CUMULATIVE',
+                              D4910C00009_Assay.new(logger),
                               logger)
     @transfers << DT_File.new('CVD',
                               'Covance',
@@ -1331,7 +1471,6 @@ class DT_Transfers
 
       while value_clauses.count > 0 do
         num_of_frames += 1
-
         value_frame = value_clauses.slice!(0, (value_clauses.count < INSERT_FRAME) ? value_clauses.count : INSERT_FRAME)
         insert_statement = insert_clause + value_frame.join(",\n")
 

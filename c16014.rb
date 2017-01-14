@@ -487,7 +487,7 @@ class C16014_Inv
           case outline[10]
             when '1'
             when '11', '12', '13', '14'
-              if !outline[20].nil? && outline[20][0..8] == "Check Out"
+              if !outline[20].nil? && outline[20][0..8] == 'Check Out'
                 specimen_location = 'SYNC'
               end
               specimen_status   = 'In Storage'
@@ -672,7 +672,7 @@ class C16014_Inv
               " #{specimen_type.insert_value}"                           + # specimen_type
               " #{specimen_barcode.insert_value}"                        + # specimen_name
               ' NULL,'                                                   + # specimen_designation,
-              ' NULL,'                                                   + # specimen_designation_detaill
+              ' NULL,'                                                   + # specimen_designation_detail
               " #{specimen_parent.insert_value}"                         + # specimen_parent
               " #{specimen_is_child.insert_value}"                       + # specimen_ischild
               ' NULL,'                                                   + # specimen_condition

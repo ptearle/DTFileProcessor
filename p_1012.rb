@@ -545,7 +545,7 @@ class MLN4924_P1012_Inv
           end
         when 'End of Treatment'
           case outline[9]
-            when '1', '2', '4', '5', '7', '11', '12', '13', '15', '17', '18', '24', '31', '47'                                     #default
+            when '1', '2', '4', '5', '7', '11', '12', '13', '15', '17', '18', '24', '31', '47'    #default
             when '34'
               specimen_location = 'LCUS'
               if !outline[18].nil? && !outline[20].nil? && outline[20][0..7] == "Check In"

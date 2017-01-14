@@ -5,7 +5,8 @@ class MasterAssay_AssayDef2
     @logger = logger
     @logger.debug "#{self.class.name} filer initialized"
 
-    @assays    = Array.new
+    @assays     = Array.new
+    @spec_types = Array.new
   end
 
   def reader(inbound_file)
@@ -24,13 +25,23 @@ class MasterAssay_AssayDef2
     num_distinct_lines = 0
 
     begin
-      assays = this_connection.query("SELECT a.code FROM assays a;")
+      assays = this_connection.query('SELECT a.code FROM assays a;')
     rescue Mysql2::Error => e
       @logger.error "DB Assay Group Select failure - #{e.message}"
       exit -1
     end
 
     assays.each { |r| @assays.push(r['code']) }
+
+    begin
+      spec_types = this_connection.query('SELECT gcs.name, st.key_value FROM gss_cvd_specimentypemap gcs
+                                          JOIN (specimen_types st) ON (gcs.specimen_type_id = st.id);')
+    rescue Mysql2::Error => e
+      @logger.error "DB Specimen Type Map Select failure - #{e.message}"
+      exit -1
+    end
+
+    spec_types.each { |s| @spec_types.push(s) }
 
     @inbound_lines.each do |inline|
       found = false
@@ -71,10 +82,14 @@ class MasterAssay_AssayDef2
 
     @processing_lines.each do |outline|
 
+      spec_type = @spec_types.find {|s| s['name'] == outline[2] }
+      out_type  = (spec_type.nil? or spec_type == '') ? 'NULL' : "'#{spec_type['key_value'].strip}'"
+
       values_clause <<
           " (#{outline[0].insert_value}"                       + # Assay Code
+          "  #{outline[1].insert_value}"                       + # Assay Analyte
           "  #{outline[4].insert_value}"                       + # Methodology
-          "  '#{outline[2].strip}'"                              + # Assay Matrix
+          "  #{out_type}"                                      + # Assay Matrix
           ' )'
     end
 
@@ -319,18 +334,18 @@ class MasterAssay_AssayDef5
 
     @processing_lines.each do |outline|
 
-      equipment_used = (outline[6] == 'Not Applicable') ? ' NULL,' : outline[6].insert_value
-      volume         = (outline[7].nil?)                ? ' NULL'  : outline[7]
+      equipment_used = (outline[6] == 'Not Applicable') ? 'NULL,' : outline[6].insert_value
+      volume         = (outline[7].nil?)                ? 'NULL'   : "#{outline[7].strip}"
 
       @logger.info "Outline[7] ->#{outline[7]}<- is volume ->#{volume}<-"
 
-      volume_unit    = (outline[8].nil?)                ? ' NULL'  : outline[8].strip
+      volume_unit    = (outline[8].nil?)                ? ' NULL'  : "'#{outline[8].strip}'"
 
       values_clause <<
           " (#{outline[1].insert_value}"               + # Assay Code
           " #{equipment_used}"                         + # equipment used
           " #{volume},"                                + # volume_of_matrix
-          " '#{volume_unit}'"                          + # volume units
+          " #{volume_unit}"                            + # volume units
           ' )'
     end
 
