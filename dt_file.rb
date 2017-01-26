@@ -23,18 +23,25 @@ require_relative 'r668_ad_1314'
 require_relative 'r668_ad_1334'
 require_relative 'r1500-cl-1321'
 require_relative 'r1908_1909_alg_1325'
+require_relative 'r668-ad-1121'
+require_relative 'r727_cl_1110'
+require_relative 'r668_ad_1117'
+require_relative 'r1193_hv_1219'
+require_relative 'r1500_hv_1214'
 
 #Takeda
 require_relative 'c16014'
 require_relative 'c16019'
 require_relative 'c16021'
 require_relative 'mln0002_3028'
+require_relative 'c33001'
 require_relative 'c34001'
 require_relative 'c34002'
 require_relative 'P_1012'
 
 # BMS FRACTION
 require_relative 'ca018001'
+require_relative 'ca018003'
 
 #Covance
 require_relative 'master_assay'
@@ -107,6 +114,44 @@ class DT_Transfers
               shipped_location,
               testing_description,
               vendor_code
+             ) VALUES',
+      :DNAINVENTORY_V1_0 =>
+          '
+           INSERT INTO dts_specimen_inventory_v1_0
+             (study_protocol_id,
+              site_number,
+              subject_num,
+              subject_gender,
+              subject_date_of_birth,
+              specimen_collect_date,
+              specimen_collect_time,
+              received_datetime,
+              treatment,
+              arm,
+              visit_name,
+              specimen_barcode,
+              specimen_identifier,
+              specimen_type,
+              specimen_name,
+              specimen_designation,
+              specimen_designation_detail,
+              specimen_parent_id,
+              specimen_ischild,
+              specimen_condition,
+              specimen_status,
+              specimen_comment,
+              dna_volume,
+              dna_volume_units,
+              dna_concentration,
+              dna_concentration_units,
+              dna_yield,
+              dna_yield_units,
+              dna_quality,
+              shipped_date,
+              shipped_location,
+              testing_description,
+              vendor_code,
+              code_key
              ) VALUES',
       :CLINVENTORY_V1_0 =>
           '
@@ -441,6 +486,14 @@ class DT_Transfers
                               logger)
     @transfers << DT_File.new('QATL',
                               'BMS',
+                              'CA018-003',
+                              'INVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              CA018003_QINV.new(logger),
+                              logger)
+    @transfers << DT_File.new('QATL',
+                              'BMS',
                               'CA018-001',
                               'ASSAY',
                               'V1_0',
@@ -542,6 +595,14 @@ class DT_Transfers
                               'V1_0',
                               'CUMULATIVE',
                               R1033_HV_1204_LCRP.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R1033-HV-1204',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1204_LCRP_DNA.new(logger),
                               logger)
     @transfers << DT_File.new('RGRN',
                               'Regeneron',
@@ -1071,21 +1132,13 @@ class DT_Transfers
                               'CUMULATIVE',
                               R1033_HV_1107_subject.new(logger),
                               logger)
-    @transfers << DT_File.new('RGRN',
-                              'Regeneron',
-                              'R1033-HV-1107',
-                              'INVENTORY',
-                              'V1_0',
-                              'CUMULATIVE',
-                              R1033_HV_1107_RGRNInv.new(logger),
-                              logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
                               'C16014',
                               'SITE',
                               'V1_0',
                               'CUMULATIVE',
-                              C16014_site.new(logger),
+                              C16014_siteRETRO.new(logger),
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
@@ -1093,7 +1146,7 @@ class DT_Transfers
                               'SUBJECT',
                               'V1_0',
                               'CUMULATIVE',
-                              C16014_subject.new(logger),
+                              C16014_subjectRETRO.new(logger),
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
@@ -1109,7 +1162,7 @@ class DT_Transfers
                               'SITE',
                               'V1_0',
                               'CUMULATIVE',
-                              C16019_site.new(logger),
+                              C16019_siteRETRO.new(logger),
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
@@ -1117,7 +1170,7 @@ class DT_Transfers
                               'SUBJECT',
                               'V1_0',
                               'CUMULATIVE',
-                              C16019_subject.new(logger),
+                              C16019_subjectRETRO.new(logger),
                               logger)
     @transfers << DT_File.new('TKDA',
                               'Takeda',
@@ -1391,6 +1444,198 @@ class DT_Transfers
                               'CUMULATIVE',
                               MasterAssay_AssayDef5.new(logger),
                               logger)
+    @transfers << DT_File.new('PPDL',
+                              'Takeda',
+                              'C16014',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16014_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('PPDL',
+                              'Takeda',
+                              'C16014',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16014_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('PPDL',
+                              'Takeda',
+                              'C33001',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C33001_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('PPDL',
+                              'Takeda',
+                              'C33001',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C33001_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('PPDL',
+                              'Takeda',
+                              'C16019',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16019_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('PPDL',
+                              'Takeda',
+                              'C16019',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              C16019_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1121',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1121_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R727-CL-1110',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1110_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R727-CL-1112',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1112_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R727-CL-1118',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R727_CL_1118_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1314',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1314_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1117',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1117_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R668-AD-1307',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R668_AD_1307_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R2176-3-AMD-1303',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R2176_3_AMD_1303_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R1033-HV-1223',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1223_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R1033-SRC-1239',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_SRC_1239_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('LCRP',
+                              'Regeneron',
+                              'R1908-1909-ALG-1325',
+                              'DNAINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1908_1909_ALG_1325_LCRP_DNA.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1193-HV-1219',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_HV_1219_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1193-HV-1219',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_HV_1219_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1193-HV-1219',
+                              'CLINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1193_HV_1219_Inventory.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1033-HV-1107',
+                              'CLINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1033_HV_1107_Inventory.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1500-HV-1214',
+                              'SITE',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_HV_1214_site.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1500-HV-1214',
+                              'SUBJECT',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_HV_1214_subject.new(logger),
+                              logger)
+    @transfers << DT_File.new('RGRN',
+                              'Regeneron',
+                              'R1500-HV-1214',
+                              'CLINVENTORY',
+                              'V1_0',
+                              'CUMULATIVE',
+                              R1500_HV_1214_Inventory.new(logger),
+                              logger)
 
     @my_connections = DT_Connections.new(logger)
     @logger = logger
@@ -1414,7 +1659,7 @@ class DT_Transfers
 
   end
 
-  def process_files (this_transfer, env)
+  def process_files (this_transfer, env, load_area)
     @logger.info "#{(env  == 'PROD') ? 'Production' : 'Test'} file processing start - #{this_transfer.vendor} #{this_transfer.file_type} file for protocol #{this_transfer.protocol}"
 
     file_path = ((env == 'PROD') ? PROD_DIR : TEST_DIR) + DIR_SEPARATOR + this_transfer.vendor
@@ -1439,6 +1684,17 @@ class DT_Transfers
     rescue Exception => e
       @logger.error "DB Connection failure - #{e.message}"
       exit -1
+    end
+
+    if load_area == 'OPS' || load_area == 'BOTH'
+      begin
+        ops_connection  = @my_connections.op_connect(env)
+      rescue Exception => e
+        @logger.error "Ops Connection failure - #{e.message}"
+        exit -1
+      end
+    else
+      ops_connection = nil
     end
 
     begin
@@ -1487,11 +1743,22 @@ class DT_Transfers
 
         @logger.debug "#{insert_statement}"
 
-        begin
-         this_connection.query(insert_statement)
-         rescue Mysql2::Error => e
-           @logger.error "DB Insert failure - #{e.message}"
-           exit -1
+        if load_area == 'INSTANCE' || load_area == 'BOTH'
+          begin
+            this_connection.query(insert_statement)
+          rescue Mysql2::Error => e
+            @logger.error "DB Insert failure - #{e.message}"
+            exit -1
+          end
+        end
+
+        if load_area == 'OPS' || load_area == 'BOTH'
+          begin
+            ops_connection.query(insert_statement)
+          rescue Mysql2::Error => e
+            @logger.error "OPS Insert failure - #{e.message}"
+            exit -1
+          end
         end
       end
 

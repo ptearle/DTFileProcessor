@@ -1,6 +1,6 @@
 require 'mysql2'
 
-class R1033_HV_1107_site
+class R1193_HV_1219_site
   def initialize(logger)
     @logger = logger
     @logger.debug "#{self.class.name} filer initialized"
@@ -28,7 +28,7 @@ class R1033_HV_1107_site
       @processing_lines.each do |distinct_line|
 
         # see if we actually need the line in the file ... Site Id already seen, then ignore
-        if specline[2] == distinct_line[2]
+        if specline['SITEID'] == distinct_line['SITEID']
           found = true
           break
         end
@@ -57,25 +57,25 @@ class R1033_HV_1107_site
     @processing_lines.each do |outline|
 
       values_clause <<
-          " (#{outline[0].insert_value}"                              + # study_protocol_id
-              " #{outline[2].rjust(6,'0').insert_value}"              + # site_number
-              " #{outline[3].insert_value}"                           + # site_name
+          " (#{outline['STUDYID'].insert_value}"                              + # study_protocol_id
+              " #{outline['SITEID'].insert_value}"                     + # site_number
+              ' NULL,'                                                + # site_name
               ' NULL,'                                                + # site_address
               ' NULL,'                                                + # site_city
               ' NULL,'                                                + # site_state
-              " #{outline[6].insert_value}"                           + # site_country
+              ' NULL,'                                                + # site_country
               ' NULL,'                                                + # site_postal_code
               ' NULL,'                                                + # site_phone
               ' NULL,'                                                + # site_fax
               ' NULL,'                                                + # site_FPFV
               ' NULL,'                                                + # site_LPLV
               ' NULL,'                                                + # planned_enrollment
-              " #{outline[4].insert_value}"                           + # site_PI
+              ' NULL,'                                                + # site_PI
               ' NULL,'                                                + # site_PI_email
               ' NULL,'                                                + # site_coordinator
               ' NULL,'                                                + # site_coordinator_email
               "'Activated',"                                          + # site_status
-              " '#{vendor}'"                                          + # vendor_code
+              "  '#{vendor}'"                                         + # vendor_code
               ' )'
     end
 
@@ -84,18 +84,12 @@ class R1033_HV_1107_site
   end
 end
 
-class R1033_HV_1107_subject
+class R1193_HV_1219_subject
 
   ARM = {
-      :A15IV    => 'Cohort 1 - 1.5mg/kg IV or placebo',
-      :A30IV    => 'Cohort 2 - 3mg/kg IV or placebo',
-      :A60IV    => 'Cohort 3 - 6mg/kg IV or placebo',
-      :A100IV   => 'Cohort 4 - 10mg/kg IV or placebo',
-      :A100SC   => 'Cohort 5 - 100mg SC or placebo',
-      :A200SC   => 'Cohort 6 - 200mg SC or placebo',
-      :A400SC   => 'Cohort 7 - 400mg SC or placebo',
-      :APLC     => 'Placebo',
-  }.freeze
+      :GroupA  => 'Group A',
+      :GroupB  => 'Group B',
+ }.freeze
 
   def initialize(logger)
     @logger = logger
@@ -118,7 +112,7 @@ class R1033_HV_1107_subject
   end
 
   def writer(vendor)
-    @logger.info 'R668AD1021_site writer start'
+    @logger.info "#{self.class.name} writer start"
 
     if @processing_lines.count == 0
       logger.info ("Nothing to insert :(")
@@ -129,21 +123,21 @@ class R1033_HV_1107_subject
 
     @processing_lines.each do |outline|
 
-      subject_treatment   = 'REGN1033'.insert_value
-      enrollment_status   = 'Randomized'.insert_value
-      subject_arm         = (outline['ACTARMCD'].nil?)  ? ' NULL,' : "#{ARM[('A' + outline['ACTARMCD'].gsub(/[^a-zA-Z0-9]/, '')).to_sym]}".insert_value
-      icf_signing_date    = (outline['LSTICDTC'].nil?)  ? ' NULL,' : "STR_TO_DATE(#{outline['LSTICDTC'].insert_value} '%Y-%m-%d'),"
-      icf_withdrawl_date  = (outline['DSWDDTC'].nil?) ? ' NULL,' : "STR_TO_DATE(#{outline['DSWDDTC'].insert_value} '%Y-%m-%d'),"
+      subject_arm         = (outline[9].nil?)  ? ' NULL,' : " #{ARM[outline['ACTARMCD'].gsub(/[^a-zA-Z0-9]/, '').to_sym].insert_value}"
+      icf_signing_date    = (outline[7].nil?)  ? ' NULL,' : "  STR_TO_DATE(#{outline['LSTICDTC'].insert_value} '%Y-%m-%d'),"
+      icf_withdrawl_date  = (outline[10].nil?) ? ' NULL,' : "  STR_TO_DATE(#{outline['DSWDDTC'].insert_value} '%Y-%m-%d'),"
+      enrollmeent_status  = 'Randomized'.insert_value
+      treatment           = 'REGN1193'.insert_value
 
       values_clause <<
           "(#{outline['STUDYID'].insert_value}"                     + # study_protocol_id
-              " #{outline['SITEID'].rjust(6,'0').insert_value}"     + # site_number
+              " #{outline['SITEID'].insert_value}"                  + # site_number
               " #{outline['SUBJID'][-3..-1].insert_value}"          + # subject_code
               " #{outline['SUBJID'].insert_value}"                  + # subject_external_id
               ' NULL,'                                              + # randomization_number
               ' NULL,'                                              + # gender
               ' NULL,'                                              + # initials
-              " #{enrollment_status}"                               + # enrollment_status
+              "  #{enrollmeent_status}"                             + # enrollment_status
               ' NULL,'                                              + # date_of_birth
               ' NULL,'                                              + # address
               ' NULL,'                                              + # city
@@ -154,10 +148,10 @@ class R1033_HV_1107_subject
               ' NULL,'                                              + # primary_race
               ' NULL,'                                              + # secondary_race
               ' NULL,'                                              + # ethnicity
-              " #{subject_treatment}"                               + # treatment
-              " #{subject_arm}"                                     + # arm
-              " #{icf_signing_date}"                                + # ICF_signing_date
-              " #{icf_withdrawl_date}"                              + # ICF withdrawl_date
+              "  #{treatment}"                                      + # treatment
+              "  #{subject_arm}"                                    + # arm
+              "  #{icf_signing_date}"                               + # ICF_signing_date
+              "  #{icf_withdrawl_date}"                             + # ICF withdrawl_date
               " '#{vendor}'"                                        + # vendor_code
               ")"
     end
@@ -166,11 +160,12 @@ class R1033_HV_1107_subject
     values_clause
   end
 end
-class R1033_HV_1107_Inventory
+
+class R1193_HV_1219_Inventory
   VISIT_MAP = {
       :V2               => 'Visit 2',
-      :V3               => 'Visit 3 - Baseline',
-      :V4               => 'Visit 4',
+      :V3               => 'Visit 3',
+      :V4               => 'Visit 4 (Baseline)',
       :V5               => 'Visit 5',
       :V6               => 'Visit 6',
       :V7               => 'Visit 7',
@@ -182,6 +177,8 @@ class R1033_HV_1107_Inventory
       :V13              => 'Visit 13',
       :V14              => 'Visit 14',
       :V15              => 'Visit 15',
+      :V16              => 'Visit 16 End of Study/ ET',
+      :VET              => 'Visit 16 End of Study/ ET'
   }.freeze
 
   def initialize(logger)
@@ -251,7 +248,7 @@ class R1033_HV_1107_Inventory
       date_of_birth      = 'NULL,'
       subject_enrollment = 'NULL,'
       collection_date    = (outline['date_time_sample_drawn'].nil?) ? ' NULL,' : "STR_TO_DATE(#{outline['date_time_sample_drawn'].insert_value} '%c/%e/%Y'),"
-      collection_time    = (outline['date_time_sample_drawn'].nil?) ? ' NULL,' : "STR_TO_DATE(#{outline['date_time_sample_drawn'].insert_value} '%c/%e/%Y %T'),"
+      collection_time    = (outline['date_time_sample_drawn'].nil?) ? ' NULL,' : "STR_TO_DATE(#{outline['date_time_sample_drawn'].insert_value} '%T'),"
       received_date      = (outline['received_on'].nil?)            ? ' NULL,' : "STR_TO_DATE(#{outline['received_on'].insert_value} '%c/%e/%Y'),"
       specimen_shipdate  = 'NULL,'
       specimen_condition = outline['condition'].insert_value

@@ -43,6 +43,27 @@ class DT_Connections
   def initialize(logger)
     @logger  = logger
     @systems = Array.new
+
+    @systems << DB_Config.new('OPS',
+                              'OPS',
+                              'PROD',
+                              'gssoperations.c4phvzpqkgwp.us-east-1.rds.amazonaws.com',
+                              'gssadmin',
+                              'GSS8604!',
+                              '3306',
+                              'dev'
+    )
+
+    @systems << DB_Config.new('OPS',
+                              'OPS',
+                              'TEST',
+                              'gssoperations.c4phvzpqkgwp.us-east-1.rds.amazonaws.com',
+                              'gssadmin',
+                              'GSS8604!',
+                              '3306',
+                              'dev'
+    )
+
     @systems << DB_Config.new('BMS',
                               'CL017',
                               'TEST',
@@ -145,6 +166,23 @@ class DT_Connections
 
     @systems.each do |system|
       if (system.client == client or system.client_code == client) and system.env == env
+        return Mysql2::Client.new(:host     => system.host,
+                                  :username => system.user,
+                                  :password => system.pass,
+                                  :port     => system.port,
+                                  :database => system.database)
+      end
+    end
+
+    raise 'No such envirnoment'
+  end
+
+  def op_connect (env)
+
+    @logger.debug "Looking for OPS #{env} connection"
+
+    @systems.each do |system|
+      if system.client == 'OPS' and system.env == env
         return Mysql2::Client.new(:host     => system.host,
                                   :username => system.user,
                                   :password => system.pass,

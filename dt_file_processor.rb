@@ -16,13 +16,14 @@ logger.progname = 'dt_file_processor'
 logger.info '****************** START ***********************'
 
 begin
-  if ARGV.count != 4
+  if ARGV.count != 5
     puts 'Invalid number of arguments.'
     puts 'Usage: dt_file_processor <vendor location> <protocol> <file type> <env>'
     puts 'Where <vendor location> e.g. ICON'
     puts '      <protocol> e.g. CA180-001'
     puts '      <file type> is SITE or INVENTORY'
     puts '      <env> is PROD or TEST'
+    puts '      <load_area> ia INSTANCE, OPS or BOTH'
     exit -1
   end
 
@@ -31,7 +32,7 @@ begin
   logger.info "Number of transmissions available ... #{dt_transfers.length}"
 
   my_transfer = dt_transfers.get_transfer(ARGV[0], ARGV[1], ARGV[2])
-  dt_transfers.process_files(my_transfer, ARGV[3])
+  dt_transfers.process_files(my_transfer, ARGV[3], ARGV[4])
 
 rescue Exception => e
   logger.error "#{e.message}"

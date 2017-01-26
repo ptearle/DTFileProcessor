@@ -148,7 +148,7 @@ class R668_AD_1334_subject
               ' NULL,'                                              + # primary_race
               ' NULL,'                                              + # secondary_race
               ' NULL,'                                              + # ethnicity
-              " 'Dupilumab',"                                        + # treatment
+              " 'Dupilumab',"                                       + # treatment
               "  #{subject_arm}"                                    + # arm
               "  #{icf_signing_date}"                               + # ICF_signing_date
               "  #{icf_withdrawl_date}"                             + # ICF withdrawl_date
